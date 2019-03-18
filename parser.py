@@ -8,6 +8,7 @@ def tokenizer(cmd):
     # a select statement can have a list of columns, we would wanna keep those
     # together, potentially on a list
     parseFlag = False
+    index = 0
     cols = []
 
     tokens = cmd.split(" ")
@@ -21,7 +22,27 @@ def tokenizer(cmd):
             col = col.replace(',','')
             stripped_cols.append(col)
         cols = stripped_cols
-        print("Columns to select: ", cols)
+        if not cols:
+            parseFlag = True
+        else:
+            print("Columns to select: ", cols)
+    elif tokens[0].lower() == "delete":
+        for token in tokens:
+            if token.lower() == "from":
+                index = tokens.index(token)
+        if not index:
+            parseFlag = True # missing from keyword in select statement
+        else:
+            cols = tokens[1:index]
+            stripped_cols = []
+            for col in cols:
+                col = col.replace(',','')
+                stripped_cols.append(col)
+                cols = stripped_cols
+            if not cols:
+                parseFlag = True
+            else:
+                print("Columns to delete: ", cols)
     elif (tokens[0].lower() == "create"):
         if tokens[1].lower() == "table":
             create_table = True
@@ -35,10 +56,11 @@ def tokenizer(cmd):
     else:
         parseFlag = True
 
-    if parseFlag == True and tokens[0].lower() != "quit":
-        print("You did not enter a valid token. Please try again")
-    elif tokens[0] == "quit":
+    if tokens[0] == "quit":
         print("Goodbye")
+    if parseFlag:
+        print("Encountered an error during parsing. Try again.")
+
 
     eval = evaluator(tokens)
     return tokens
