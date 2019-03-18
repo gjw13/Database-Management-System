@@ -16,4 +16,4 @@ Testing out the grammar (not technically accurate grammar, but functions similar
 <E>       --> <DDL>
 <E>       --> <DML>
 <DDL>     --> CREATE_TABLE | DROP_TABLE | CREATE_INDEX | DROP_INDEX
-<DML>     --> SELECT
+<DML>     --> SELECT | DELETE
