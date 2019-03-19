@@ -112,8 +112,20 @@ def drop_table(tokens):
 def evaluator(token_list):
     # takes in list of tokens in List form
     # checks for SQL statement validity based on SQL grammar
+    # ASSUMPTION: the passed in list is all in lowercase
+    result = True
+    valid_begin = ["select", "create", "drop", "insert", "update", "delete"]
+    begin = token_list.pop(0)
+    if (begin in valid_begin):
+    	# Need some form of recusion here?
+    	if (begin == "select"):
+    		# Go to select specific eval?
+    		result = True # temporary
+    else:
+    	result = False
 
-    return True
+
+    return result
 
 def main():
     cmd = ""
