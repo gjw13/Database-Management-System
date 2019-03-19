@@ -11,12 +11,17 @@ def tokenizer(cmd):
     # a select statement can have a list of columns, we would wanna keep those
     # together, potentially on a list
     parseFlag = False
+    quit = False
     index = 0
+    begin = ""
     cols = []
 
-    tokens = cmd.split(" ")
 
-    if tokens[0].lower() == "select":
+    tokens = cmd.split(" ")
+    tokens = [x.lower() for x in tokens]
+    begin = tokens[0]
+
+    if begin == "select":
         for token in tokens:
             if token.lower() == "from":
                 index = tokens.index(token)
@@ -30,7 +35,7 @@ def tokenizer(cmd):
             parseFlag = True
         else:
             print("Columns to select: ", cols)
-    elif tokens[0].lower() == "delete":
+    elif begin == "delete":
         for token in tokens:
             if token.lower() == "from":
                 index = tokens.index(token)
@@ -47,18 +52,18 @@ def tokenizer(cmd):
                 parseFlag = True
             else:
                 print("Columns to delete: ", cols)
-    elif (tokens[0].lower() == "create"):
+    elif begin == "create":
         if tokens[1].lower() == "table":
             create_table(tokens[2:])
         elif tokens[1].lower() == "index":
             create_index = True
-    elif (tokens[0].lower() == "drop"):
+    elif begin == "drop":
         if tokens[1].lower() == "table":
             drop_table(tokens[2:])
         elif tokens[1].lower() == "index":
             drop_index = True
-    elif tokens[0].lower() == "quit":
-        print("Goodbye")
+    elif begin == "quit":
+        print("Goodbye.")
     else:
         parseFlag = True
 
