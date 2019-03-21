@@ -86,7 +86,10 @@ def parse_select(i,tokens):
 def parse_from(i,tokens):
     i+=1
     table_name = tokens[i]
-    
+
+
+def parse_where(i, tokens):
+    i+=1
 
 
 def create_table(tokens):
