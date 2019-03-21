@@ -15,26 +15,15 @@ def tokenizer(cmd):
     index = 0
     begin = ""
     cols = []
+    i=0
 
 
     tokens = cmd.split(" ")
     tokens = [x.lower() for x in tokens]
-    begin = tokens[0]
+    begin = tokens[i]
 
     if begin == "select":
-        for token in tokens:
-            if token.lower() == "from":
-                index = tokens.index(token)
-        cols = tokens[1:index]
-        stripped_cols = []
-        for col in cols:
-            col = col.replace(',','')
-            stripped_cols.append(col)
-        cols = stripped_cols
-        if not cols:
-            parseFlag = True
-        else:
-            print("Columns to select: ", cols)
+        parse_select(i,tokens)
     elif begin == "delete":
         for token in tokens:
             if token.lower() == "from":
@@ -73,6 +62,32 @@ def tokenizer(cmd):
 
     eval = evaluator(tokens)
     return tokens
+
+def parse_select(i,tokens):
+    i+=1
+    index=0
+    stripped_cols = []
+
+    for token in tokens:
+        if token == "from":
+            index = tokens.index(token)
+    cols = tokens[i:index]
+    for col in cols:
+        col = col.replace(',','')
+        stripped_cols.append(col)
+    cols = stripped_cols
+    if not cols:
+        parseFlag = True
+    else:
+        print("Columns to select: ", cols)
+        i=index
+        parse_from(i,tokens)
+
+def parse_from(i,tokens):
+    i+=1
+    table_name = tokens[i]
+    
+
 
 def create_table(tokens):
     error = False
