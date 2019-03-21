@@ -3,6 +3,8 @@
 # Greg Wills and David Wilke
 # Professor Ophir Frieder
 
+import eval
+
 def tokenizer(cmd):
     # takes in sql command in string form
     # returns a list of tokens
@@ -81,16 +83,14 @@ def parse_select(i,tokens):
     else:
         print("Columns to select: ", cols)
         i=index
-        parse_from(i,tokens)
+        parse_table(i,tokens)
 
-def parse_from(i,tokens):
+def parse_table(i,tokens):
     i+=1
     table_name = tokens[i]
 
-
 def parse_where(i, tokens):
     i+=1
-
 
 def create_table(tokens):
     error = False
