@@ -5,7 +5,7 @@
 
 import eval
 
-def tokenizer(cmd):
+def parse_expression(cmd):
     # takes in sql command in string form
     # returns a list of tokens
 
@@ -69,6 +69,15 @@ def parse_select(i,tokens):
     i+=1
     index=0
     stripped_cols = []
+    parseFlag = False
+
+    cols, index, parseFlag = parse_cols(i,tokens)
+    i=index
+    tables, i, parseFlag = parse_table(i,tokens)
+
+def parse_cols(i,tokens):
+    parseFlag = False
+    stripped_cols = []
 
     for token in tokens:
         if token == "from":
@@ -82,15 +91,35 @@ def parse_select(i,tokens):
         parseFlag = True
     else:
         print("Columns to select: ", cols)
-        i=index
-        parse_table(i,tokens)
+    return cols, index, parseFlag
 
 def parse_table(i,tokens):
     i+=1
-    table_name = tokens[i]
+    where_index=0
+    tuple_list = []
+    parseFlag = False
+
+    for token in tokens:
+        if token == "where":
+            where_index = tokens.index(token)
+    if where_index == 0:
+        where_index = len(tokens)
+    table_info = tokens[i:where_index]
+    table_info = ' '.join(table_info)
+    table_list = table_info.split(", ")
+    for tok in table_list:
+        temp = tok.split(" ")
+        if len(temp) == 2:
+            name_and_alias = (temp[0],temp[1])
+            tuple_list.append(name_and_alias)
+        else:
+            parseFlag = True
+    return tuple_list, i, parseFlag
 
 def parse_where(i, tokens):
     i+=1
+    parseFlag = False
+
 
 def create_table(tokens):
     error = False
@@ -155,7 +184,7 @@ def main():
     prompt = "> "
     while cmd.lower() != "quit":
         cmd = raw_input(prompt)
-        tokens = tokenizer(cmd)
+        tokens = parse_expression(cmd)
         # print tokens
 
 
