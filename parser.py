@@ -61,9 +61,8 @@ def parse_expression(cmd):
     if parseFlag:
         print("Encountered an error during parsing. Try again.")
 
-
-    eval = evaluator(tokens)
     return tokens
+
 
 def parse_select(i,tokens):
     i+=1
@@ -74,6 +73,7 @@ def parse_select(i,tokens):
     cols, index, parseFlag = parse_cols(i,tokens)
     i=index
     tables, i, parseFlag = parse_table(i,tokens)
+    conditions, i, parseFlag = parse_where(i,tokens)
 
 def parse_cols(i,tokens):
     parseFlag = False
@@ -107,18 +107,58 @@ def parse_table(i,tokens):
     table_info = tokens[i:where_index]
     table_info = ' '.join(table_info)
     table_list = table_info.split(", ")
-    for tok in table_list:
-        temp = tok.split(" ")
-        if len(temp) == 2:
-            name_and_alias = (temp[0],temp[1])
-            tuple_list.append(name_and_alias)
-        else:
-            parseFlag = True
+
+    if (len(table_list) == 1): # Handle one table situation
+        tuple_list.append(table_list[0])
+    else:
+        for tok in table_list:
+            temp = tok.split(" ")
+            if len(temp) == 2:
+                name_and_alias = (temp[0],temp[1])
+                tuple_list.append(name_and_alias)
+            else:
+                parseFlag = True
+
+    i = where_index
+    print("Tables selected from: " , tuple_list)
     return tuple_list, i, parseFlag
 
 def parse_where(i, tokens):
-    i+=1
+    i+=1 #this is now just past the where
     parseFlag = False
+    conditions = []
+    end_of_where = len(tokens) # Assumption: where clause is the last thing in a query
+
+
+    where_conditions = tokens[i:end_of_where]
+    print(where_conditions)
+    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens
+    split_indicies = [] # list of indicies to split conditions on
+    for tok in where_conditions:
+        if tok in split_list:
+            split_indicies.append(where_conditions.index(tok))
+
+    split_indicies.append(len(where_conditions))
+    print(split_indicies)
+    # There could also be parenthesis in here which determine Order of Operations
+    # Start by assuming there are none
+    start_index = 0
+    for end_index in split_indicies:
+        temp_list = where_conditions[start_index:end_index]
+        if len(temp_list) == 3:
+            condition_tuple = (temp_list[0], temp_list[1], temp_list[2])
+            conditions.append(condition_tuple)
+        elif len(temp_list) == 4: #assuming the first thing is a splitting token
+            condition_tuple = (temp_list[0])
+            conditions.append(condition_tuple)
+            condition_tuple2 = (temp_list[1], temp_list[2], temp_list[3])
+            conditions.append(condition_tuple2)
+        else:
+            parseFlag = True
+        start_index = end_index
+
+    print("Where Conditions: " , conditions)
+    return conditions, i, parseFlag
 
 
 def create_table(tokens):
