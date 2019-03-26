@@ -25,7 +25,7 @@ def parse_expression(cmd):
     begin = tokens[i]
 
     if begin == "select":
-        parse_select(i,tokens)
+        parseFlag = parse_select(i,tokens) # Need to add some other return array here to send to eval
     elif begin == "delete":
         for token in tokens:
             if token.lower() == "from":
@@ -70,10 +70,17 @@ def parse_select(i,tokens):
     stripped_cols = []
     parseFlag = False
 
-    cols, index, parseFlag = parse_cols(i,tokens)
-    i=index
+    cols, i, parseFlag = parse_cols(i,tokens)
+    if (parseFlag):
+        return parseFlag
     tables, i, parseFlag = parse_table(i,tokens)
+    if (parseFlag):
+        return parseFlag
     conditions, i, parseFlag = parse_where(i,tokens)
+    if (parseFlag):
+        return parseFlag
+
+    return parseFlag # Need to add some other return array here to send to eval
 
 def parse_cols(i,tokens):
     parseFlag = False
