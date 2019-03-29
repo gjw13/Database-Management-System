@@ -3,8 +3,11 @@
 # Greg Wills and David Wilke
 # Professor Ophir Frieder
 
-import eval
+# import eval
 
+#######################################
+# PARSE EXP ###########################
+#######################################
 def parse_expression(cmd):
     # takes in sql command in string form
     # returns a list of tokens
@@ -44,14 +47,14 @@ def parse_expression(cmd):
             else:
                 print("Columns to delete: ", cols)
     elif begin == "create":
-        if tokens[1].lower() == "table":
-            create_table(tokens[2:])
-        elif tokens[1].lower() == "index":
+        if tokens[i+1] == "table":
+            create_table(tokens,i)
+        elif tokens[i+1] == "index":
             create_index = True
     elif begin == "drop":
-        if tokens[1].lower() == "table":
-            drop_table(tokens[2:])
-        elif tokens[1].lower() == "index":
+        if tokens[i+1] == "table":
+            table_name,i = drop_table(tokens,i)
+        elif tokens[i+1] == "index":
             drop_index = True
     elif begin == "quit":
         print("Goodbye.")
@@ -63,7 +66,9 @@ def parse_expression(cmd):
 
     return tokens
 
-
+#######################################
+# PARSE SELECT ########################
+#######################################
 def parse_select(i,tokens):
     i+=1
     index=0
@@ -75,6 +80,9 @@ def parse_select(i,tokens):
     tables, i, parseFlag = parse_table(i,tokens)
     conditions, i, parseFlag = parse_where(i,tokens)
 
+#######################################
+# PARSE COLUMNS #######################
+#######################################
 def parse_cols(i,tokens):
     parseFlag = False
     stripped_cols = []
@@ -93,6 +101,9 @@ def parse_cols(i,tokens):
         print("Columns to select: ", cols)
     return cols, index, parseFlag
 
+#######################################
+# PARSE TABLE #########################
+#######################################
 def parse_table(i,tokens):
     i+=1
     where_index=0
@@ -123,6 +134,9 @@ def parse_table(i,tokens):
     print("Tables selected from: " , tuple_list)
     return tuple_list, i, parseFlag
 
+#######################################
+# PARSE WHERE #########################
+#######################################
 def parse_where(i, tokens):
     i+=1 #this is now just past the where
     parseFlag = False
@@ -160,15 +174,19 @@ def parse_where(i, tokens):
     print("Where Conditions: " , conditions)
     return conditions, i, parseFlag
 
-
-def create_table(tokens):
+#######################################
+# CREATE TABLE ########################
+#######################################
+def create_table(tokens,i):
     error = False
+    i+=2
     columns = []
     types = []
-    table_name = tokens[0]
-    tokens.remove(table_name)
-    tokens = ' '.join(tokens)
-    val_and_col = tokens.split(", ")
+    table_name = tokens[i]
+    # tokens.remove(table_name)
+    i+=1
+    values = ' '.join(tokens[i:])
+    val_and_col = values.split(", ")
     for token in val_and_col:
         token = token.replace('(','')
         token = token.replace(')','')
@@ -180,31 +198,38 @@ def create_table(tokens):
             types.append(test[1])
         else:
             error = True
+    print(columns)
 
     # succesfully grabs the columns and values to be added to new table
     if not error:
         print(table_name.upper() + " table succesfully created.")
     else:
         print("Error in creating table " + table_name.upper() + ".")
+        print("Encountered parse error.")
 
-def drop_table(tokens):
-    error = False
-    print(tokens)
-    if tokens:
-        table_name = tokens[0]
+#######################################
+# DROP TABLE ##########################
+#######################################
+def drop_table(tokens,i,parseError):
+    parseError = False
+    table_name = ""
+    i+=2
+    if len(tokens[i:])==1:
+        table_name = tokens[i].replace(';','')
     else:
-        error = True
+        parseError = True
     # if table_name exists, drop it
-    if not error:
+    if not parseError:
         print(table_name.upper() + " table successfully deleted.")
     else:
         print("Error in deleting table " + table_name.upper() + ".")
 
+    return table_name,i
 
 def main():
     cmd = ""
     prompt = "> "
-    while cmd.lower() != "quit":
+    while cmd != "quit":
         cmd = raw_input(prompt)
         tokens = parse_expression(cmd)
         # print tokens
