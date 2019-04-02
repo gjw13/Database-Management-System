@@ -37,7 +37,7 @@ def parse_expression(cmd):
         if not index:
             parseFlag = True # missing from keyword in select statement
         else:
-            parse_delete(index, tokens)
+            parse_delete(index+1, tokens)
     elif begin == "create":
         if tokens[i+1] == "table":
             create_table(tokens,i)
@@ -178,6 +178,22 @@ def parse_where(i, tokens):
     print("Where Conditions: " , conditions)
     return conditions, i, parseFlag
 
+
+#######################################
+# PARSE DELETE ########################
+#######################################
+def parse_delete (i, tokens):
+    parseFlag = False
+    temp_name = tokens[i]
+    if temp_name[len(temp_name)-2] == ";":
+        table_name = temp_name[:-1]
+        return table_name, i, parseFlag
+    else:
+        table_name = tokens[i]
+        conditions, i, parseFlag = parse_where(i+1, tokens)
+        return table_name, conditions, i, parseFlag
+
+
 #######################################
 # CREATE TABLE ########################
 #######################################
@@ -270,7 +286,7 @@ def parse_drop_index(tokens,i):
 #######################################
 def create_index(tokens, i):
     parseError = False
-    if (tokens[i] == "if" && tokens[i+1] == "not"):
+    if (tokens[i] == "if" and tokens[i+1] == "not"):
         ifNotExistsCheck = True
         i+=3
     index_name = tokens[i]
