@@ -150,7 +150,7 @@ def parse_where(i, tokens):
 
     where_conditions = tokens[i:end_of_where]
     print(where_conditions)
-    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens
+    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens TODO: NOT
     split_indicies = [] # list of indicies to split conditions on
     for tok in where_conditions:
         if tok in split_list:
@@ -185,7 +185,7 @@ def parse_where(i, tokens):
 def parse_delete (i, tokens):
     parseFlag = False
     temp_name = tokens[i]
-    if temp_name[len(temp_name)-2] == ";":
+    if temp_name[len(temp_name)-2] == ";" or i+1 == len(tokens):
         table_name = temp_name[:-1]
         return table_name, i, parseFlag
     else:
@@ -300,7 +300,7 @@ def create_index(tokens, i):
     i+=1
     # Sanity check
     if tokens[i] == "on":
-        table_name = tokens[i+1] # ASSUMPTION: table name is seperated from parens by a space
+        table_name = tokens[i+1] # ASSUMPTION: all parens are seperated by spaces on both sides
         column_list = []
         if (tokens[i+2] == "("):
             end_of_col_index = tokens.index(")", i+2)
@@ -316,6 +316,7 @@ def create_index(tokens, i):
                 column_list.append((col_name, ordering))
                 i+=1
         # ASSUMPTION: No "include" block afterwards
+        print(column_list)
         return column_list, i, parseError
     else:
         return i, True
