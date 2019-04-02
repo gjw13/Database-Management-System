@@ -238,10 +238,6 @@ def drop_table(tokens,i):
 
     return table_name,i
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 20de75bb4d0c190742c5f3e86ca00ebace168290
 #######################################
 # DROP INDEX ##########################
 #######################################
@@ -275,9 +271,6 @@ def parse_drop_index(tokens,i):
         parseError = True
     return index_name,table_ref,i
 
-<<<<<<< HEAD
-
-
 #######################################
 # CREATE INDEX ########################
 #######################################
@@ -310,8 +303,6 @@ def create_index(tokens, i):
     else:
         return i, True
 
-=======
->>>>>>> 20de75bb4d0c190742c5f3e86ca00ebace168290
 def main():
     cmd = ""
     prompt = "> "
