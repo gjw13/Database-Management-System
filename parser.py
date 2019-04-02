@@ -22,6 +22,7 @@ def parse_expression(cmd):
     cols = []
     i=0
 
+    # drop semicolon from end of statement
 
     tokens = cmd.split(" ")
     tokens = [x.lower() for x in tokens]
@@ -55,7 +56,7 @@ def parse_expression(cmd):
         if tokens[i+1] == "table":
             table_name,i = drop_table(tokens,i)
         elif tokens[i+1] == "index":
-            drop_index = True
+            dropped_index,table_ref,i = drop_index(tokens,i)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -74,6 +75,11 @@ def parse_select(i,tokens):
     index=0
     stripped_cols = []
     parseFlag = False
+    is_distinct = False
+
+    if tokens[i] == "distinct":
+        is_distinct = True
+        i+=1
 
     cols, i, parseFlag = parse_cols(i,tokens)
     if (parseFlag):
@@ -217,8 +223,7 @@ def create_table(tokens,i):
 #######################################
 # DROP TABLE ##########################
 #######################################
-def drop_table(tokens,i,parseError):
-    parseError = False
+def drop_table(tokens,i):
     table_name = ""
     i+=2
     if len(tokens[i:])==1:
@@ -232,6 +237,39 @@ def drop_table(tokens,i,parseError):
         print("Error in deleting table " + table_name.upper() + ".")
 
     return table_name,i
+
+#######################################
+# DROP INDEX ##########################
+#######################################
+def drop_index(tokens,i):
+    parseError = False
+    index_name = ""
+    table_ref = ""
+    is_exists = True
+    i+=2
+
+    if len(tokens[i:])>2:
+        if tokens[i] == "if" and tokens[i+1] == "exists":
+            is_exists = True #check if index exists
+            i+=2
+    else:
+        parseError = True
+    index_name,table_ref,i = parse_drop_index(tokens,i)
+
+    # print(index_name + " , " + table_ref)
+
+    return index_name,table_ref,i
+
+def parse_drop_index(tokens,i):
+    parseError = False
+    index_name = tokens[i]
+    i+=1
+    if tokens[i] == "on":
+        i+=1
+        table_ref = tokens[i]
+    else:
+        parseError = True
+    return index_name,table_ref,i
 
 def main():
     cmd = ""
