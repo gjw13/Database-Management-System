@@ -22,6 +22,7 @@ def parse_expression(cmd):
     cols = []
     i=0
 
+    # drop semicolon from end of statement
 
     tokens = cmd.split(" ")
     tokens = [x.lower() for x in tokens]
@@ -50,12 +51,12 @@ def parse_expression(cmd):
         if tokens[i+1] == "table":
             create_table(tokens,i)
         elif tokens[i+1] == "index":
-            create_index = True
+            create_index(tokens, i+2)
     elif begin == "drop":
         if tokens[i+1] == "table":
             table_name,i = drop_table(tokens,i)
         elif tokens[i+1] == "index":
-            drop_index = True
+            dropped_index,table_ref,i = drop_index(tokens,i)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -74,6 +75,11 @@ def parse_select(i,tokens):
     index=0
     stripped_cols = []
     parseFlag = False
+    is_distinct = False
+
+    if tokens[i] == "distinct":
+        is_distinct = True
+        i+=1
 
     cols, i, parseFlag = parse_cols(i,tokens)
     if (parseFlag):
@@ -217,8 +223,7 @@ def create_table(tokens,i):
 #######################################
 # DROP TABLE ##########################
 #######################################
-def drop_table(tokens,i,parseError):
-    parseError = False
+def drop_table(tokens,i):
     table_name = ""
     i+=2
     if len(tokens[i:])==1:
@@ -232,6 +237,74 @@ def drop_table(tokens,i,parseError):
         print("Error in deleting table " + table_name.upper() + ".")
 
     return table_name,i
+
+
+#######################################
+# DROP INDEX ##########################
+#######################################
+def drop_index(tokens,i):
+    parseError = False
+    index_name = ""
+    table_ref = ""
+    is_exists = True
+    i+=2
+
+    if len(tokens[i:])>2:
+        if tokens[i] == "if" and tokens[i+1] == "exists":
+            is_exists = True #check if index exists
+            i+=2
+    else:
+        parseError = True
+    index_name,table_ref,i = parse_drop_index(tokens,i)
+
+    # print(index_name + " , " + table_ref)
+
+    return index_name,table_ref,i
+
+def parse_drop_index(tokens,i):
+    parseError = False
+    index_name = tokens[i]
+    i+=1
+    if tokens[i] == "on":
+        i+=1
+        table_ref = tokens[i]
+    else:
+        parseError = True
+    return index_name,table_ref,i
+
+
+
+#######################################
+# CREATE INDEX ########################
+#######################################
+def create_index(tokens, i):
+    parseError = False
+    if (tokens[i] == "if" && tokens[i+1] == "not"):
+        ifNotExistsCheck = True
+        i+=3
+    index_name = tokens[i]
+    i+=1
+    # Sanity check
+    if tokens[i] == "on":
+        table_name = tokens[i+1] # ASSUMPTION: table name is seperated from parens by a space
+        column_list = []
+        if (tokens[i+2] == "("):
+            end_of_col_index = tokens.index(")", i+2)
+            i+=3
+            while (i < end_of_col_index):
+                col_name = tokens[i]
+                i+=1
+                temp_order = tokens[i]
+                if temp_order[len(temp_order)-2] == ",":
+                    ordering = temp_order[:-1]
+                else:
+                    ordering = tokens[i]
+                column_list.append((col_name, ordering))
+                i+=1
+        # ASSUMPTION: No "include" block afterwards
+        return column_list, i, parseError
+    else:
+        return i, True
 
 def main():
     cmd = ""
