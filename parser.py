@@ -22,9 +22,8 @@ def parse_expression(cmd):
     cols = []
     i=0
 
-    # drop semicolon from end of statement
-
-    tokens = cmd.split(" ")
+    cmd = cmd.replace(';','') # drop semicolon from end of statement
+    tokens = cmd.split(" ") # split command by space
     tokens = [x.lower() for x in tokens]
     begin = tokens[i]
 
@@ -234,6 +233,8 @@ def drop_table(tokens,i):
     if_exists = False
     table_name = ""
     i+=2
+    parseError = False
+
     if len(tokens[i:])==1:
         if_exists = False
     elif len(tokens[i:])==3:
@@ -285,8 +286,6 @@ def parse_drop_index(tokens,i):
     else:
         parseError = True
     return index_name,table_ref,i
-
-
 
 #######################################
 # CREATE INDEX ########################
