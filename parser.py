@@ -3,7 +3,7 @@
 # Greg Wills and David Wilke
 # Professor Ophir Frieder
 
-# import eval
+from eval import *
 
 #######################################
 # PARSE EXP ###########################
@@ -28,7 +28,9 @@ def parse_expression(cmd):
     begin = tokens[i]
 
     if begin == "select":
-        parseFlag = parse_select(i,tokens) # Need to add some other return array here to send to eval
+        cols, tables, conditions, parseFlag = parse_select(i,tokens) # Need to add some other return array here to send to eval
+        if not parseFlag:
+            eval_select(cols, tables, conditions)
     elif begin == "delete":
         for token in tokens:
             if token.lower() == "from":
@@ -81,7 +83,7 @@ def parse_select(i,tokens):
     if (parseFlag):
         return parseFlag
 
-    return parseFlag # Need to add some other return array here to send to eval
+    return cols, tables, conditions, parseFlag # Need to add some other return array here to send to eval
 
 #######################################
 # PARSE COLUMNS #######################
@@ -146,10 +148,12 @@ def parse_where(i, tokens):
     conditions = []
     end_of_where = len(tokens) # Assumption: where clause is the last thing in a query
 
+    if (i >= end_of_where):
+        return conditions, i, parseFlag
 
     where_conditions = tokens[i:end_of_where]
     print(where_conditions)
-    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens
+    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens TODO: NOT
     split_indicies = [] # list of indicies to split conditions on
     for tok in where_conditions:
         if tok in split_list:
@@ -184,13 +188,13 @@ def parse_where(i, tokens):
 def parse_delete (i, tokens):
     parseFlag = False
     temp_name = tokens[i]
-    if temp_name[len(temp_name)-2] == ";":
+    conditions = []
+    if temp_name[len(temp_name)-2] == ";" or i+1 == len(tokens):
         table_name = temp_name[:-1]
-        return table_name, i, parseFlag
     else:
         table_name = tokens[i]
         conditions, i, parseFlag = parse_where(i+1, tokens)
-        return table_name, conditions, i, parseFlag
+    return table_name, conditions, i, parseFlag
 
 
 #######################################
@@ -299,7 +303,7 @@ def create_index(tokens, i):
     i+=1
     # Sanity check
     if tokens[i] == "on":
-        table_name = tokens[i+1] # ASSUMPTION: table name is seperated from parens by a space
+        table_name = tokens[i+1] # ASSUMPTION: all parens are seperated by spaces on both sides
         column_list = []
         if (tokens[i+2] == "("):
             end_of_col_index = tokens.index(")", i+2)
@@ -315,6 +319,7 @@ def create_index(tokens, i):
                 column_list.append((col_name, ordering))
                 i+=1
         # ASSUMPTION: No "include" block afterwards
+        print(column_list)
         return column_list, i, parseError
     else:
         return i, True
