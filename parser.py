@@ -37,16 +37,7 @@ def parse_expression(cmd):
         if not index:
             parseFlag = True # missing from keyword in select statement
         else:
-            cols = tokens[1:index]
-            stripped_cols = []
-            for col in cols:
-                col = col.replace(',','')
-                stripped_cols.append(col)
-                cols = stripped_cols
-            if not cols:
-                parseFlag = True
-            else:
-                print("Columns to delete: ", cols)
+            parse_delete(index, tokens)
     elif begin == "create":
         if tokens[i+1] == "table":
             create_table(tokens,i)
@@ -238,6 +229,7 @@ def drop_table(tokens,i):
 
     return table_name,i
 
+
 #######################################
 # DROP INDEX ##########################
 #######################################
@@ -270,6 +262,8 @@ def parse_drop_index(tokens,i):
     else:
         parseError = True
     return index_name,table_ref,i
+
+
 
 #######################################
 # CREATE INDEX ########################
