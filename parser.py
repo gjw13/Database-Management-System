@@ -215,12 +215,19 @@ def create_table(tokens,i):
 # DROP TABLE ##########################
 #######################################
 def drop_table(tokens,i):
+    if_exists = False
     table_name = ""
     i+=2
     if len(tokens[i:])==1:
-        table_name = tokens[i].replace(';','')
+        if_exists = False
+    elif len(tokens[i:])==3:
+        if tokens[i]=="if" and tokens[i+1]=="exists":
+            if_exists = True # check if table exists
+            i+=2
     else:
         parseError = True
+    table_name = tokens[i].replace(';','')
+
     # if table_name exists, drop it
     if not parseError:
         print(table_name.upper() + " table successfully deleted.")
