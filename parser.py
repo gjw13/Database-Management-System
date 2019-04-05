@@ -28,7 +28,7 @@ def parse_expression(cmd):
     begin = tokens[i]
 
     if begin == "select":
-        cols, tables, conditions, parseFlag = parse_select(i,tokens) # Need to add some other return array here to send to eval
+        cols, tables, conditions, parseFlag = parse_select(i,tokens)
         if not parseFlag:
             eval_select(cols, tables, conditions)
     elif begin == "delete":
@@ -83,7 +83,7 @@ def parse_select(i,tokens):
     if (parseFlag):
         return parseFlag
 
-    return cols, tables, conditions, parseFlag # Need to add some other return array here to send to eval
+    return cols, tables, conditions, parseFlag
 
 #######################################
 # PARSE COLUMNS #######################
@@ -126,7 +126,7 @@ def parse_table(i,tokens):
 
     if (len(table_list) == 1): # Handle one table situation
         tuple_list.append(table_list[0])
-    else:
+    else: # ASSUMPTION: Tables have aliases
         for tok in table_list:
             temp = tok.split(" ")
             if len(temp) == 2:
@@ -153,29 +153,32 @@ def parse_where(i, tokens):
 
     where_conditions = tokens[i:end_of_where]
     print(where_conditions)
-    split_list = ["and", "or", "in", "like", "between"] # list of valid splitting tokens TODO: NOT
+    split_list = ["and", "or"] # list of valid splitting tokens
     split_indicies = [] # list of indicies to split conditions on
     for tok in where_conditions:
         if tok in split_list:
             split_indicies.append(where_conditions.index(tok))
 
     split_indicies.append(len(where_conditions))
-    print(split_indicies)
+    #print(split_indicies)
+
     # There could also be parenthesis in here which determine Order of Operations
     # Start by assuming there are none
+    # TODO: Handle an "and" as part of a between clause
     start_index = 0
     for end_index in split_indicies:
         temp_list = where_conditions[start_index:end_index]
         if len(temp_list) == 3:
-            condition_tuple = (temp_list[0], temp_list[1], temp_list[2])
+            condition_tuple = tuple(temp_list)
             conditions.append(condition_tuple)
-        elif len(temp_list) == 4: #assuming the first thing is a splitting token
+        elif temp_list[0] in split_list: #assuming the first thing is a splitting token
             condition_tuple = (temp_list[0])
             conditions.append(condition_tuple)
-            condition_tuple2 = (temp_list[1], temp_list[2], temp_list[3])
+            condition_tuple2 = tuple(temp_list[1:])
             conditions.append(condition_tuple2)
         else:
-            parseFlag = True
+            condition_tuple = tuple(temp_list)
+            conditions.append(condition_tuple)
         start_index = end_index
 
     print("Where Conditions: " , conditions)
