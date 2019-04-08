@@ -24,6 +24,19 @@ def eval_delete(table_name, conditions):
     #Find the table with table name
     #Find the tuple(s) with the relevant Conditions (using an index if it exists)
     #Remove those tuple(s) from the table
+    return True
+
+def eval_create_index(index_name, col_list):
+
+    return True
+
+def eval_drop_table(table_name):
+
+    return True
+
+def eval_drop_index(index_name, table_ref):
+
+    return True
 
 
 eval_create_table("customers",("first","last"))

@@ -43,14 +43,22 @@ def parse_expression(cmd):
                 eval_delete(table_name, conditions)
     elif begin == "create":
         if tokens[i+1] == "table":
-            create_table(tokens,i)
+             table_name, columns, types, parseFlag = create_table(tokens,i)
+             if not parseFlag:
+                 eval_create_table(table_name, columns)
         elif tokens[i+1] == "index":
-            create_index(tokens, i+2)
+            index_name, col_list, i, parseFlag = create_index(tokens, i+2)
+            if not parseFlag:
+                eval_create_index(index_name, col_list)
     elif begin == "drop":
         if tokens[i+1] == "table":
-            table_name,i = drop_table(tokens,i)
+            table_name,i, parseFlag = drop_table(tokens,i)
+            if not parseFlag:
+                eval_drop_table(table_name)
         elif tokens[i+1] == "index":
-            dropped_index,table_ref,i = drop_index(tokens,i)
+            dropped_index,table_ref,i, parseFlag = drop_index(tokens,i)
+            if not parseFlag:
+                eval_drop_index(dropped_index, table_ref)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -235,6 +243,8 @@ def create_table(tokens,i):
         print("Error in creating table " + table_name.upper() + ".")
         print("Encountered parse error.")
 
+    return table_name, columns, types, error
+
 #######################################
 # DROP TABLE ##########################
 #######################################
@@ -260,7 +270,7 @@ def drop_table(tokens,i):
     else:
         print("Error in deleting table " + table_name.upper() + ".")
 
-    return table_name,i
+    return table_name,i, parseError
 
 
 #######################################
@@ -279,11 +289,11 @@ def drop_index(tokens,i):
             i+=2
     else:
         parseError = True
-    index_name,table_ref,i = parse_drop_index(tokens,i)
+    index_name,table_ref,i,parseError = parse_drop_index(tokens,i)
 
     # print(index_name + " , " + table_ref)
 
-    return index_name,table_ref,i
+    return index_name,table_ref,i, parseError
 
 def parse_drop_index(tokens,i):
     parseError = False
@@ -294,7 +304,7 @@ def parse_drop_index(tokens,i):
         table_ref = tokens[i]
     else:
         parseError = True
-    return index_name,table_ref,i
+    return index_name,table_ref,i, parseError
 
 #######################################
 # CREATE INDEX ########################
@@ -325,9 +335,9 @@ def create_index(tokens, i):
                 i+=1
         # ASSUMPTION: No "include" block afterwards
         print(column_list)
-        return column_list, i, parseError
+        return index_name, column_list, i, parseError
     else:
-        return i, True
+        return index_name, [], i, True
 
 def main():
     cmd = ""
