@@ -1,14 +1,14 @@
 # evaluator functions
 # helpers
+from __future__ import print_function
 import numpy as np
+
 
 def eval_select(cols, tables, conditions):
     # print("IN EVAL")
     table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
     columns = get_columns(table,num_cols)
-    print(cols[0])
     if cols[0] != "*":
-        # print("Not selecting all the columns")
         index_of_cols = []
         col_index=0
         for col in cols:
@@ -16,12 +16,11 @@ def eval_select(cols, tables, conditions):
             for item in columns:
                 if col == item:
                     test_index = col_index
-                    # print("Index: " + str(test_index))
                     index_of_cols.append(test_index+1)
                 col_index+=1
 
         testing = index_of_cols[:]
-
+        print("-------------------------")
         for g in range(1,num_rows):
             # need some way to grab indexes of selected columns
             # index_of_cols = [g*num_cols+1,g*num_cols+2]
@@ -30,24 +29,66 @@ def eval_select(cols, tables, conditions):
                 testing[x]= g*num_cols+index_of_cols[x]
 
             test = np.take(table,testing)
-            print(test)
+            print_output(test)
+        print("-------------------------")
+        # if conditions[1] == "=":
     elif cols[0]=="*":
         # select all the columns
-        greg = True
-        print(cols)
-        print("Selecting all columns")
         index_of_cols = []
         for x in range(1,num_cols):
             index_of_cols.append(x)
+        if not conditions:
 
-        testing = index_of_cols[:]
+            testing = index_of_cols[:]
 
-        for g in range(1,num_rows):
-            for x in range(0,len(index_of_cols)):
-                testing[x]= g*num_cols+index_of_cols[x]
+            for g in range(1,num_rows):
+                for x in range(0,len(index_of_cols)):
+                    testing[x]= g*num_cols+index_of_cols[x]
 
-            test = np.take(table,testing)
-            print(test)
+                test = np.take(table,testing)
+                print(test)
+        elif conditions:
+            col_index = 0
+            # only works for the first condition so far
+            first_col = conditions[0][0]
+            first_val = conditions[0][2]
+            for item in columns:
+                if first_col == item:
+                    print(col_index)
+                    break
+                else:
+                    col_index+=1
+            list_of_vals = []
+            row_nums_matched = []
+            for x in range(1,num_rows):
+                list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+            print(list_of_vals)
+            for val in range(0,len(list_of_vals)):
+                # print(list_of_vals[val][1])
+                # print(first_val)
+                if list_of_vals[val][1] == first_val:
+                    row_nums_matched.append(list_of_vals[val][0])
+            if not row_nums_matched:
+                print("The query did not return any results")
+            else:
+                print(row_nums_matched)
+                result = []
+                # must select indices of cols for each row in row_nums_matched
+                for x in range(1,num_rows):
+                    result.append(np.take(table,))
+            # row_nums_matched contains list that holds the rows that match condition
+
+            # conditions exist and handle the appropriately
+
+def print_output(result):
+    # print(result)
+    output_list = []
+    for x in range(0,len(result)):
+        output_list.append(result[x])
+    # print(output_list)
+    for item in output_list:
+        print("|  "+item,end='\t')
+    print("|")
 
 def eval_create_table(table_name,cols):
     m=20 # number of rows
@@ -65,13 +106,15 @@ def eval_create_table(table_name,cols):
         index += num_cols
     # print(table)
     columns = get_columns(table,num_cols)
+    np.put(table,30,"doe")
+    print(table)
 
     return table, num_cols, m
 
 def create_test_db(table,index,num_cols,row_num):
     np.put(table, row_num*num_cols, row_num)
     np.put(table, row_num*num_cols+1,"John")
-    np.put(table, row_num*num_cols+2,"Smith")
+    np.put(table, row_num*num_cols+2,"smith")
     np.put(table, row_num*num_cols+3,"3700 O St. NW")
 
 
@@ -104,5 +147,5 @@ def eval_drop_index(index_name, table_ref):
 
     return True
 
-# eval_select(("first","last"),"customers",("x","=","1"))
+eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address","phone"))
