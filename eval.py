@@ -17,4 +17,13 @@ def eval_create_table(table_name,cols):
     # test[0:1] = table_name
     print(test)
 
+
+
+def eval_delete(table_name, conditions):
+    # TODO:
+    #Find the table with table name
+    #Find the tuple(s) with the relevant Conditions (using an index if it exists)
+    #Remove those tuple(s) from the table
+
+
 eval_create_table("customers",("first","last"))

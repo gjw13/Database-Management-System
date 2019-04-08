@@ -38,7 +38,9 @@ def parse_expression(cmd):
         if not index:
             parseFlag = True # missing from keyword in select statement
         else:
-            parse_delete(index+1, tokens)
+            table_name, conditions, i, parseFlag = parse_delete(index+1, tokens)
+            if not parseFlag:
+                eval_delete(table_name, conditions)
     elif begin == "create":
         if tokens[i+1] == "table":
             create_table(tokens,i)
@@ -195,7 +197,7 @@ def parse_delete (i, tokens):
     if temp_name[len(temp_name)-2] == ";" or i+1 == len(tokens):
         table_name = temp_name[:-1]
     else:
-        table_name = tokens[i]
+        table_name = tokens[i] # ASSUMPTION: Only one table
         conditions, i, parseFlag = parse_where(i+1, tokens)
     return table_name, conditions, i, parseFlag
 
