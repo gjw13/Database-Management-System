@@ -38,7 +38,7 @@ def eval_select(cols, tables, conditions):
         for x in range(1,num_cols):
             index_of_cols.append(x)
         if not conditions:
-
+            # handles simple select statement with no conditions
             testing = index_of_cols[:]
 
             for g in range(1,num_rows):
@@ -48,6 +48,7 @@ def eval_select(cols, tables, conditions):
                 test = np.take(table,testing)
                 print(test)
         elif conditions:
+            # handles a complex select statement
             col_index = 0
             # only works for the first condition so far
             first_col = conditions[0][0]
@@ -60,22 +61,49 @@ def eval_select(cols, tables, conditions):
                     col_index+=1
             list_of_vals = []
             row_nums_matched = []
-            for x in range(1,num_rows):
-                list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
-            print(list_of_vals)
-            for val in range(0,len(list_of_vals)):
-                # print(list_of_vals[val][1])
-                # print(first_val)
-                if list_of_vals[val][1] == first_val:
-                    row_nums_matched.append(list_of_vals[val][0])
-            if not row_nums_matched:
-                print("The query did not return any results")
-            else:
-                print(row_nums_matched)
-                result = []
-                # must select indices of cols for each row in row_nums_matched
+            if conditions[0][1] == "=":
                 for x in range(1,num_rows):
-                    result.append(np.take(table,))
+                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+                print(list_of_vals)
+                for val in range(0,len(list_of_vals)):
+                    if list_of_vals[val][1] == first_val:
+                        row_nums_matched.append(list_of_vals[val][0])
+                if not row_nums_matched:
+                    print("The query did not return any results")
+                else:
+                    print(row_nums_matched)
+                    result = []
+                    # must select indices of cols for each row in row_nums_matched
+                    testing = index_of_cols[:]
+
+                    for g in row_nums_matched:
+                        for x in range(0,len(index_of_cols)):
+                            testing[x]= g*num_cols+index_of_cols[x]
+
+                        test = np.take(table,testing)
+                        print_output(test)
+
+            elif conditions[0][1] == "!=":
+                for x in range(1,num_rows):
+                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+                print(list_of_vals)
+                for val in range(0,len(list_of_vals)):
+                    if list_of_vals[val][1] != first_val:
+                        row_nums_matched.append(list_of_vals[val][0])
+                if not row_nums_matched:
+                    print("The query did not return any results")
+                else:
+                    print(row_nums_matched)
+                    result = []
+                    # must select indices of cols for each row in row_nums_matched
+                    testing = index_of_cols[:]
+
+                    for g in row_nums_matched:
+                        for x in range(0,len(index_of_cols)):
+                            testing[x]= g*num_cols+index_of_cols[x]
+
+                        test = np.take(table,testing)
+                        print_output(test)
             # row_nums_matched contains list that holds the rows that match condition
 
             # conditions exist and handle the appropriately
@@ -106,6 +134,7 @@ def eval_create_table(table_name,cols):
         index += num_cols
     # print(table)
     columns = get_columns(table,num_cols)
+    np.put(table,29,"jane")
     np.put(table,30,"doe")
     print(table)
 
@@ -113,7 +142,7 @@ def eval_create_table(table_name,cols):
 
 def create_test_db(table,index,num_cols,row_num):
     np.put(table, row_num*num_cols, row_num)
-    np.put(table, row_num*num_cols+1,"John")
+    np.put(table, row_num*num_cols+1,"john")
     np.put(table, row_num*num_cols+2,"smith")
     np.put(table, row_num*num_cols+3,"3700 O St. NW")
 
