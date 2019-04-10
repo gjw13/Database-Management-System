@@ -151,7 +151,7 @@ def parse_table(i,tokens):
 
 #######################################
 # PARSE WHERE #########################
-#######################################
+####################################### TODO: Error on 185 with three conditions
 def parse_where(i, tokens):
     i+=1 #this is now just past the where
     parseFlag = False
@@ -165,12 +165,11 @@ def parse_where(i, tokens):
     print(where_conditions)
     split_list = ["and", "or"] # list of valid splitting tokens
     split_indicies = [] # list of indicies to split conditions on
-    for tok in where_conditions:
-        if tok in split_list:
-            split_indicies.append(where_conditions.index(tok))
+    for cond_index in range(len(where_conditions)):
+        if where_conditions[cond_index] in split_list:
+            split_indicies.append(cond_index)
 
     split_indicies.append(len(where_conditions))
-    #print(split_indicies)
 
     # There could also be parenthesis in here which determine Order of Operations
     # Start by assuming there are none

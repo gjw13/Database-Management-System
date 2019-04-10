@@ -45,6 +45,7 @@ def eval_select(cols, tables, conditions):
             else:
                 complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions)
 
+
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     col_index = 0
     condition_num = 0
