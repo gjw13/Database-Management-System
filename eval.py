@@ -46,7 +46,8 @@ def eval_select(cols, tables, conditions):
             if num_conditions == 1:
                 simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols)
             else:
-                complex_where()
+                #complex_where()
+                z = 1 # placeholder
             # row_nums_matched contains list that holds the rows that match condition
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
@@ -57,7 +58,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
             the_value = conditions[condition_num][2]
             for item in columns:
                 if the_column == item:
-                    print(col_index)
+                    print(index_of_cols)
                     break
                 else:
                     col_index+=1
@@ -65,7 +66,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
             row_nums_matched = []
         # basically want to match row_nums_matched for each condition and take intersection
     elif conditions[1] == "or":
-        or = True
+        or_check = True
         # want to take union or row_nums_matched for each condition
 
 def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
