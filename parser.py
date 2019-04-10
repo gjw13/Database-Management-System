@@ -342,10 +342,12 @@ def create_index(tokens, i):
 def main():
     cmd = ""
     prompt = "> "
+    cmd_list = []
     while cmd != "quit":
         cmd = raw_input(prompt)
+        cmd_list.append(cmd)
         tokens = parse_expression(cmd)
-        # print tokens
+    
 
 
 main()
