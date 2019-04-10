@@ -6,7 +6,7 @@ import numpy as np
 
 def eval_select(cols, tables, conditions):
     table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
-    columns = get_columns(table,num_cols)
+    columns = get_columns(table,num_cols) # function return list of column names
     if cols[0] != "*":
         index_of_cols = []
         col_index=0
@@ -18,66 +18,18 @@ def eval_select(cols, tables, conditions):
                     test_index = col_index
                     index_of_cols.append(test_index+1)
                 col_index+=1
-
         testing = index_of_cols[:]
-        # print("-------------------------")
         if not conditions:
             simple_select(table,num_rows,num_cols,index_of_cols,testing)
         elif conditions:
-            col_index = 0
-            # only works for the first condition so far
-            first_col = conditions[0][0]
-            first_val = conditions[0][2]
-            for item in columns:
-                if first_col == item:
-                    print(col_index)
-                    break
-                else:
-                    col_index+=1
-            list_of_vals = []
-            row_nums_matched = []
-            if conditions[0][1] == "=":
-                for x in range(1,num_rows):
-                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
-                print(list_of_vals)
-                for val in range(0,len(list_of_vals)):
-                    if list_of_vals[val][1] == first_val:
-                        row_nums_matched.append(list_of_vals[val][0])
-                if not row_nums_matched:
-                    print("The query did not return any results")
-                else:
-                    print(row_nums_matched)
-                    result = []
-                    # must select indices of cols for each row in row_nums_matched
-                    testing = index_of_cols[:]
+            print("length of conditions: " + str(len(conditions)))
+            num_conditions = (len(conditions)+1)/2
+            print("number of conditions: " + str(num_conditions))
+            if num_conditions == 1:
+                simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols)
+            else:
+                complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions)
 
-                    for g in row_nums_matched:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
-
-                        test = np.take(table,testing)
-                        print_output(test)
-
-            elif conditions[0][1] == "!=":
-                for x in range(1,num_rows):
-                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
-                print(list_of_vals)
-                for val in range(0,len(list_of_vals)):
-                    if list_of_vals[val][1] != first_val:
-                        row_nums_matched.append(list_of_vals[val][0])
-                if not row_nums_matched:
-                    print("The query did not return any results")
-                else:
-                    print(row_nums_matched)
-                    result = []
-                    # must select indices of cols for each row in row_nums_matched
-                    testing = index_of_cols[:]
-                    for g in row_nums_matched:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
-
-                        test = np.take(table,testing)
-                        print_output(test)
     elif cols[0]=="*":
         # select all the columns
         index_of_cols = []
@@ -90,64 +42,83 @@ def eval_select(cols, tables, conditions):
         elif conditions:
             # handles a complex select statement
             col_index = 0
-            # only works for the first condition so far
-            first_col = conditions[0][0]
-            first_val = conditions[0][2]
-            # finds index of column given in condition
+            num_conditions = (len(conditions)+1)/2
+            if num_conditions == 1:
+                simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols)
+            else:
+                complex_where()
+            # row_nums_matched contains list that holds the rows that match condition
+
+def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
+    condition_num = 0
+    if conditions[1] == "and":
+        for x in range(0,num_conditions):
+            the_column = conditions[condition_num][0]
+            the_value = conditions[condition_num][2]
             for item in columns:
-                if first_col == item:
+                if the_column == item:
                     print(col_index)
                     break
                 else:
                     col_index+=1
             list_of_vals = []
             row_nums_matched = []
-            if conditions[0][1] == "=":
-                for x in range(1,num_rows):
-                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
-                print(list_of_vals)
-                for val in range(0,len(list_of_vals)):
-                    if list_of_vals[val][1] == first_val:
-                        row_nums_matched.append(list_of_vals[val][0])
-                if not row_nums_matched:
-                    print("The query did not return any results")
-                else:
-                    print(row_nums_matched)
-                    result = []
-                    # must select indices of cols for each row in row_nums_matched
-                    testing = index_of_cols[:]
+        # basically want to match row_nums_matched for each condition and take intersection
+    elif conditions[1] == "or":
+        or = True
+        # want to take union or row_nums_matched for each condition
 
-                    for g in row_nums_matched:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
+def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
+    col_index = 0
+    first_col = conditions[0][0]
+    first_val = conditions[0][2]
+    for item in columns:
+        if first_col == item:
+            print(col_index)
+            break
+        else:
+            col_index+=1
+    list_of_vals = []
+    row_nums_matched = []
+    if conditions[0][1] == "=":
+        for x in range(1,num_rows):
+            list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+        # print(list_of_vals)
+        for val in range(0,len(list_of_vals)):
+            if list_of_vals[val][1] == first_val:
+                row_nums_matched.append(list_of_vals[val][0])
+        if not row_nums_matched:
+            print("The query did not return any results")
+        else:
+            print(row_nums_matched)
+            result = []
+            testing = index_of_cols[:]
+            for g in row_nums_matched:
+                for x in range(0,len(index_of_cols)):
+                    testing[x]= g*num_cols+index_of_cols[x]
+                test = np.take(table,testing)
+                print_output(test)
 
-                        test = np.take(table,testing)
-                        print_output(test)
+    elif conditions[0][1] == "!=":
+        for x in range(1,num_rows):
+            list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+        # print(list_of_vals)
+        for val in range(0,len(list_of_vals)):
+            if list_of_vals[val][1] != first_val:
+                row_nums_matched.append(list_of_vals[val][0])
+        if not row_nums_matched:
+            print("The query did not return any results")
+        else:
+            print(row_nums_matched)
+            result = []
+            # must select indices of cols for each row in row_nums_matched
+            testing = index_of_cols[:]
+            for g in row_nums_matched:
+                for x in range(0,len(index_of_cols)):
+                    testing[x]= g*num_cols+index_of_cols[x]
 
-            elif conditions[0][1] == "!=":
-                for x in range(1,num_rows):
-                    list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
-                print(list_of_vals)
-                for val in range(0,len(list_of_vals)):
-                    if list_of_vals[val][1] != first_val:
-                        row_nums_matched.append(list_of_vals[val][0])
-                if not row_nums_matched:
-                    print("The query did not return any results")
-                else:
-                    print(row_nums_matched)
-                    result = []
-                    # must select indices of cols for each row in row_nums_matched
-                    testing = index_of_cols[:]
-                    for g in row_nums_matched:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
-
-                        test = np.take(table,testing)
-                        print_output(test)
-            # row_nums_matched contains list that holds the rows that match condition
-    save_state(table)
-    new_table = restore_state()
-    print(new_table)
+                test = np.take(table,testing)
+                print_output(test)
 
 # handles a simple select statement without conditions
 def simple_select(table,num_rows,num_cols,index_of_cols,testing):
