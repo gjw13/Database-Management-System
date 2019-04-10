@@ -178,7 +178,7 @@ def parse_where(i, tokens):
     start_index = 0
     for end_index in split_indicies:
         temp_list = where_conditions[start_index:end_index]
-        # print("Temp list: " + str(temp_list))
+        print("Temp list: " + str(temp_list))
         if len(temp_list) == 3:
             condition_tuple = tuple(temp_list)
             conditions.append(condition_tuple)
