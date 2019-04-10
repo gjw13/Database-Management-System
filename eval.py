@@ -45,19 +45,24 @@ def eval_select(cols, tables, conditions):
             else:
                 complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions)
 
-
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     col_index = 0
     condition_num = 0
     matched_rows_list = []
     intersection_list = []
     union_list = []
+    result = []
+    itr = 1
     for x in range(0,num_conditions):
+        col_index = 0
         the_column = conditions[condition_num][0]
         the_value = conditions[condition_num][2]
+        # print("Current column: " + str(the_column))
+        # print("Current value: " + str(the_value))
+        # print("Condition num: " + str(condition_num))
+
         for item in columns:
             if the_column == item:
-                # print(col_index)
                 break
             else:
                 col_index+=1
@@ -65,46 +70,60 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         row_nums_matched = []
         if conditions[condition_num][1] == "=":
             for x in range(1,num_rows):
+                # print(np.take(table,x*num_cols+col_index+1))
                 list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+            # print(list_of_vals)
             for val in range(0,len(list_of_vals)):
                 if list_of_vals[val][1] == the_value:
                     row_nums_matched.append(list_of_vals[val][0])
+            # print(row_nums_matched)
             matched_rows_list.append(row_nums_matched)
-            # print(matched_rows_list)
+            print(matched_rows_list)
             if len(matched_rows_list) > 1:
-                if conditions[1] == "and":
-                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[1]))
-                elif conditions[1] == "or":
-                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[1]))
+                if conditions[condition_num-1] == "and":
+                    print("itr = " + (str(itr)))
+                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+                    matched_rows_list[0] = intersection_list[:]
+                    print(intersection_list)
+                    itr+=1
+                elif conditions[condition_num-1] == "or":
+                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+                    matched_rows_list[0] = intersection_list[:]
+                    print(intersection_list)
+                    itr +=1
                 # print(intersection_list)
-            result = []
             testing = index_of_cols[:]
             for g in intersection_list:
                 for x in range(0,len(index_of_cols)):
                     testing[x]= g*num_cols+index_of_cols[x]
-                result.append(np.take(table,testing))
+                # result.append(np.take(table,testing))
                 test = np.take(table,testing)
                 print_output(test)
         elif conditions[condition_num][1] == "!=":
+            print("in the correct if else")
             for x in range(1,num_rows):
                 list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
             for val in range(0,len(list_of_vals)):
                 if list_of_vals[val][1] != the_value:
                     row_nums_matched.append(list_of_vals[val][0])
             matched_rows_list.append(row_nums_matched)
-            # print(matched_rows_list)
+            print(matched_rows_list)
             if len(matched_rows_list) > 1:
-                if conditions[1] == "and":
-                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[1]))
-                elif conditions[1] == "or":
-                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[1]))
-                # print(intersection_list)
-            result = []
+                if conditions[condition_num-1] == "and":
+                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+                    matched_rows_list[0] = intersection_list[:]
+                    print(intersection_list)
+                    itr += 1
+                elif conditions[condition_num-1] == "or":
+                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+                    matched_rows_list[0] = intersection_list[:]
+                    print(intersection_list)
+                    itr +=1
             testing = index_of_cols[:]
             for g in intersection_list:
                 for x in range(0,len(index_of_cols)):
                     testing[x]= g*num_cols+index_of_cols[x]
-                result.append(np.take(table,testing))
+                # result.append(np.take(table,testing))
                 test = np.take(table,testing)
                 print_output(test)
         condition_num += 2
@@ -209,7 +228,7 @@ def eval_create_table(table_name,cols):
     np.put(table,29,"jane")
     np.put(table,30,"doe")
     np.put(table,33,"greg")
-    # print(table)
+    print(table)
 
     return table, num_cols, m
 
