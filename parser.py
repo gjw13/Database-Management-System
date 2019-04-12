@@ -5,6 +5,8 @@
 
 from eval import *
 
+#TODO: Handle insert, delete and update of tuples
+
 #######################################
 # PARSE EXP ###########################
 #######################################
@@ -59,6 +61,17 @@ def parse_expression(cmd):
             dropped_index,table_ref,i, parseFlag = drop_index(tokens,i)
             if not parseFlag:
                 eval_drop_index(dropped_index, table_ref)
+    elif begin == "insert":
+        if tokens[i+1] == "into": # ASSUMPTION: only allowing for full tuples to be inserted
+            table_name, values, parseFlag = parse_insert(tokens, i+1)
+            if not parseFlag:
+                eval_insert(table_name, values)
+        else:
+            parseFlag = True
+    elif begin == "update":
+        table_name, col_vals, conditions, parseFlag = parse_update(tokens, i+1)
+        if not parseFlag:
+            eval_update(table_name, col_vals, conditions)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -338,6 +351,47 @@ def create_index(tokens, i):
         return index_name, column_list, i, parseError
     else:
         return index_name, [], i, True
+
+#######################################
+# INSERT INTO #########################
+#######################################
+
+def parse_insert(tokens, i):
+    parseError = False
+    table_name = tokens[i+1]
+    values = []
+
+    # move i beyond the values keyword
+    i += 2
+
+    # ASSUMPTION: there's parenthesis around the values, seperated by commas
+    updated_token = tokens[i].replace("(", "")
+    tokens[i] = updated_token
+    updated_token = tokens[len(tokens)-1].replace(")", "")
+    tokens[len(tokens)-1] = updated_token
+
+    if not updated_token:
+        parseError = True
+    else:
+        temp_vals = tokens[i:]
+        for val in temp_vals:
+            new_val = val.replace(",", "")
+            values.append(new_val)
+
+    return table_name, values, parseError
+
+
+def parse_update(tokens, i):
+    parseError = False
+    table_name = tokens[i+1]
+
+    i+= 3 # move the tokens past the set token
+    end_of_tuples = tokens.index("where")
+    col_val_conditions = tokens[i:end_of_tuples]
+
+    
+
+
 
 def main():
     cmd = ""
