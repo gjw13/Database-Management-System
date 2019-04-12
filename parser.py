@@ -384,12 +384,29 @@ def parse_insert(tokens, i):
 def parse_update(tokens, i):
     parseError = False
     table_name = tokens[i+1]
+    col_vals = []
 
     i+= 3 # move the tokens past the set token
     end_of_tuples = tokens.index("where")
     col_val_conditions = tokens[i:end_of_tuples]
 
-    
+    # iterate through the conditions, putting every trio in a tuple
+    j = 0
+    while (j <= len(col_val_conditions)-4):
+        tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2])
+        if not tuple:
+            parseError = True
+            j = len(col_val_conditions)-3
+        else:
+            col_vals.append(tuple)
+            j+=3
+    if not parseError:
+        i = end_of_tuples
+        conditions, i, parseError = parse_where(i, tokens)
+        return table_name, col_vals, conditions, parseError
+    else:
+        return table_name, col_vals, [], parseError
+
 
 
 
