@@ -57,9 +57,6 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         col_index = 0
         the_column = conditions[condition_num][0]
         the_value = conditions[condition_num][2]
-        # print("Current column: " + str(the_column))
-        # print("Current value: " + str(the_value))
-        # print("Condition num: " + str(condition_num))
 
         for item in columns:
             if the_column == item:
