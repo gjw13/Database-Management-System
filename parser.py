@@ -112,8 +112,8 @@ def parse_cols(i,tokens):
     cols = stripped_cols
     if not cols:
         parseFlag = True
-    else:
-        print("Columns to select: ", cols)
+    # else:
+    #     print("Columns to select: ", cols)
     return cols, index, parseFlag
 
 #######################################
@@ -146,7 +146,7 @@ def parse_table(i,tokens):
                 parseFlag = True
 
     i = where_index
-    print("Tables selected from: " , tuple_list)
+    # print("Tables selected from: " , tuple_list)
     return tuple_list, i, parseFlag
 
 #######################################
@@ -162,7 +162,7 @@ def parse_where(i, tokens):
         return conditions, i, parseFlag
 
     where_conditions = tokens[i:end_of_where]
-    print(where_conditions)
+    # print(where_conditions)
     split_list = ["and", "or"] # list of valid splitting tokens
     split_indicies = [] # list of indicies to split conditions on
     for cond_index in range(len(where_conditions)):
@@ -177,7 +177,7 @@ def parse_where(i, tokens):
     start_index = 0
     for end_index in split_indicies:
         temp_list = where_conditions[start_index:end_index]
-        print("Temp list: " + str(temp_list))
+        # print("Temp list: " + str(temp_list))
         if len(temp_list) == 3:
             condition_tuple = tuple(temp_list)
             conditions.append(condition_tuple)
@@ -191,7 +191,7 @@ def parse_where(i, tokens):
             conditions.append(condition_tuple)
         start_index = end_index
 
-    print("Where Conditions: " , conditions)
+    # print("Where Conditions: " , conditions)
     return conditions, i, parseFlag
 
 
@@ -234,7 +234,7 @@ def create_table(tokens,i):
             types.append(test[1])
         else:
             error = True
-    print(columns)
+    # print(columns)
 
     # succesfully grabs the columns and values to be added to new table
     if not error:
@@ -334,7 +334,7 @@ def create_index(tokens, i):
                 column_list.append((col_name, ordering))
                 i+=1
         # ASSUMPTION: No "include" block afterwards
-        print(column_list)
+        # print(column_list)
         return index_name, column_list, i, parseError
     else:
         return index_name, [], i, True
