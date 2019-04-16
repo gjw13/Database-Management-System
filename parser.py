@@ -65,7 +65,7 @@ def parse_expression(cmd):
         if tokens[i+1] == "into": # ASSUMPTION: only allowing for full tuples to be inserted
             table_name, values, parseFlag = parse_insert(tokens, i+1)
             if not parseFlag:
-                eval_insert(table_name, values)
+                table = eval_insert(table_name, values)
         else:
             parseFlag = True
     elif begin == "update":
@@ -375,7 +375,7 @@ def parse_insert(tokens, i):
     else:
         temp_vals = tokens[i:]
         for val in temp_vals:
-            new_val = val.replace(",", "")
+            new_val = val.replace(",", "")# .replace('(','').replace(')','')
             values.append(new_val)
 
     return table_name, values, parseError
@@ -383,10 +383,10 @@ def parse_insert(tokens, i):
 
 def parse_update(tokens, i):
     parseError = False
-    table_name = tokens[i+1]
+    table_name = tokens[i]
     col_vals = []
 
-    i+= 3 # move the tokens past the set token
+    i+= 2 # move the tokens past the set token
     end_of_tuples = tokens.index("where")
     col_val_conditions = tokens[i:end_of_tuples]
 
@@ -406,9 +406,6 @@ def parse_update(tokens, i):
         return table_name, col_vals, conditions, parseError
     else:
         return table_name, col_vals, [], parseError
-
-
-
 
 def main():
     cmd = ""

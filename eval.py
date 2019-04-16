@@ -217,6 +217,42 @@ def restore_state():
 
     # return table
 
+def eval_insert(table_name,values):
+    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
+    columns = get_columns(table,num_cols)
+    cols = []
+    index_of_cols = []
+    vals = []
+    row_num = 1 # if we want it sorted, just figure out a way to set row_num
+    test_values = [("first","last","address"),"values",("adam","jones","arizona")]
+    for col in test_values[0]:
+        cols.append(col)
+    for val in test_values[2]:
+        vals.append(val)
+    for col in cols:
+        col_index = 0
+        for item in columns:
+            if col == item:
+                test_index = col_index
+                index_of_cols.append(test_index+1)
+            col_index+=1
+
+    table.resize((num_rows+1,num_cols))
+    row_num = num_rows
+    np.put(table,row_num*num_cols,row_num)
+    for x in range(0,len(vals)):
+        np.put(table,row_num*num_cols+index_of_cols[x],vals[x])
+    print(table)
+    return table
+
+def eval_update(table_name,col_vals,conditions):
+    print(table_name)
+    print(col_vals)
+    print(conditions)
+    test_values = ("customers",("first","=","hodor"),("last","=","doe"))
+
+
+
 def eval_create_table(table_name,cols):
     m=20 # number of rows
     index=0
@@ -280,3 +316,4 @@ def eval_drop_index(index_name, table_ref):
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address","phone"))
+table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
