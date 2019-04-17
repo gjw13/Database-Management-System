@@ -49,9 +49,9 @@ def parse_expression(cmd):
              if not parseFlag:
                  eval_create_table(table_name, columns)
         elif tokens[i+1] == "index":
-            index_name, col_list, i, parseFlag = create_index(tokens, i+2)
+            index_name, table_name, col_list, i, parseFlag = create_index(tokens, i+2)
             if not parseFlag:
-                eval_create_index(index_name, col_list)
+                eval_create_index(index_name, table_name, col_list)
     elif begin == "drop":
         if tokens[i+1] == "table":
             table_name,i, parseFlag = drop_table(tokens,i)
@@ -348,9 +348,9 @@ def create_index(tokens, i):
                 i+=1
         # ASSUMPTION: No "include" block afterwards
         # print(column_list)
-        return index_name, column_list, i, parseError
+        return index_name,table_name, column_list, i, parseError
     else:
-        return index_name, [], i, True
+        return index_name,"", [], i, True
 
 #######################################
 # INSERT INTO #########################

@@ -298,11 +298,21 @@ def get_columns(table,num_cols):
 def eval_delete(table_name, conditions):
     # TODO:
     #Find the table with table name
+    table = [] # ASSUMPTION: the last column in the table is an index reference
     #Find the tuple(s) with the relevant Conditions (using an index if it exists)
+    #if table[len(table)-1] != -1: #There is an index TODO: Handle index
+        #
+    #else:
+    for tuple in conditions:
+        col_name = tuple[0]
+
+
     #Remove those tuple(s) from the table
     return True
 
-def eval_create_index(index_name, col_list):
+def eval_create_index(index_name, table_name, col_list):
+    # NOTE: These are done using the new Table class
+    
 
     return True
 
