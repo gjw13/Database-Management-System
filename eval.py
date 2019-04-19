@@ -246,12 +246,38 @@ def eval_insert(table_name,values):
     return table
 
 def eval_update(table_name,col_vals,conditions):
-    print(table_name)
     print(col_vals)
     print(conditions)
-    test_values = ("customers",("first","=","hodor"),("last","=","doe"))
+    # table_name, col_vals, conditions = ("customers",("first","=","hodor"),("last","=","doe"))
+    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
+    columns = get_columns(table,num_cols)
+    index_of_col_conditions = 0
+    index_of_col_value = 0
+    print(num_rows)
+    col_index = 0
+    # find index of column to replace
+    for item in columns:
+        if item == conditions[0]:
+            index_of_col_conditions = col_index+1
+            break
+        col_index += 1
+    col_index = 0
+    # find index of column to insert value
+    for item in columns:
+        if item == col_vals[0]:
+            index_of_col_value = col_index+1
+            break
+        col_index += 1
 
+    for x in range(0,num_rows):
+        # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
+        # print("Test: "+ str(np.take(table,num_cols*x+index_of_col_conditions)))
+        if conditions[2] == np.take(table,num_cols*x+index_of_col_conditions):
+            np.put(table,num_cols*x+index_of_col_value,col_vals[2])
+            break
 
+    print(table)
+    return table
 
 def eval_create_table(table_name,cols):
     m=20 # number of rows
@@ -275,7 +301,7 @@ def eval_create_table(table_name,cols):
     np.put(table,34,"wills")
     np.put(table,37,"donald")
     np.put(table,38,"trump")
-    # print(table)
+    print(table)
 
     return table, num_cols, m
 
@@ -312,7 +338,7 @@ def eval_delete(table_name, conditions):
 
 def eval_create_index(index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
-    
+
 
     return True
 
@@ -326,4 +352,5 @@ def eval_drop_index(index_name, table_ref):
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address","phone"))
-table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
+# table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
+# table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
