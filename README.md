@@ -1,7 +1,16 @@
 # cosc280project
 *Created in Python*
 
-*Possible Grammer: https://www.jooq.org/doc/latest/manual/sql-building/sql-parser/sql-parser-grammar/*
+*Possible Grammar: https://www.jooq.org/doc/latest/manual/sql-building/sql-parser/sql-parser-grammar/*
+
+TO DO LIST (4/19)
+  1. Finish eval_update() and eval_delete()
+  2. Incorporate table class into existing evaluator and parser
+  3. Get indexes to work
+  4. Relational schema
+      a. Create a way to keep track of tables (list of tables)
+      b. Parser accounts for aliases
+      c. Right a join algorithm (probably merge-scan) but could be nested
 
 Parser TODO:
   1. Tokenize the input
@@ -9,11 +18,3 @@ Parser TODO:
   3. Semantical analysis - https://sqldep.com/sql-parser/
 
 *User starts the project, which opens up a prompt for entering queries*
-
-Testing out the grammar (not technically accurate grammar, but functions similar)
-
-<program> --> <E>
-<E>       --> <DDL>
-<E>       --> <DML>
-<DDL>     --> CREATE_TABLE | DROP_TABLE | CREATE_INDEX | DROP_INDEX
-<DML>     --> SELECT | DELETE
