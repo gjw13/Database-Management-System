@@ -338,7 +338,8 @@ def eval_create_table(table_name,cols):
     m=20 # number of rows
     index=0
     num_cols = len(cols)+1
-    table = np.chararray((m,num_cols),itemsize=10)
+    dtype = np.dtype([('key', int), ('first', 'S10'), ('last', 'S10'), ('address','S10')])
+    table = np.chararray((m,num_cols),itemsize=20)
     table.fill(0)
     np.put(table, index, "key")
     for x in range(0,num_cols-1):
@@ -357,6 +358,8 @@ def eval_create_table(table_name,cols):
     np.put(table,37,"donald")
     np.put(table,38,"trump")
     print(table)
+    print("\n")
+    test_sort(table)
 
     return table, num_cols, m
 
@@ -424,6 +427,11 @@ def eval_delete(table_name, conditions):
     #Remove those tuple(s) from the table
     return True
 
+def test_sort(table):
+    table.sort(axis=0)
+    print(table)
+    print("this is just a test, the table structure has not changed")
+
 def eval_create_index(index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
 
@@ -439,7 +447,7 @@ def eval_drop_index(index_name, table_ref):
     return True
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
-# eval_create_table("customers",("first","last","address","phone"))
+eval_create_table("customers",("first","last","address"))
 # table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
-table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
+# table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
 # eval_delete("customers",[("first","=","john")])
