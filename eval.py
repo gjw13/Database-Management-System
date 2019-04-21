@@ -246,20 +246,102 @@ def eval_insert(table_name,values):
     return table
 
 def eval_update(table_name,col_vals,conditions):
-    print(table_name)
+    table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
     print(col_vals)
     print(conditions)
-    test_values = ("customers",("first","=","hodor"),("last","=","doe"))
+    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
+    columns = get_columns(table,num_cols)
+    num_conditions = (len(conditions)+1)/2
+    index_of_col_conditions = 0
+    index_of_col_value = 0
+    col_index = 0
+    cols = []
+    vals = []
+    search_cols = []
+    search_vals = []
+    index_of_cols1 = []
+    index_of_cols2 = []
+    list_of_vals = []
+    matched_rows_list = []
+    row_nums_matched = []
 
+    for item in col_vals:
+        if item != "and" and item != "or":
+            cols.append(item[0])
+            vals.append(item[2])
+    for item in conditions:
+        if item != "and" and item != "or":
+            search_cols.append(item[0])
+            search_vals.append(item[2])
+    # find index of columns to replace
+    for col in cols:
+        col_index = 0
+        for item in columns:
+            if col == item:
+                test_index = col_index
+                index_of_cols1.append(test_index+1)
+            col_index+=1
+    # find index of column to search for value
+    for col in search_cols:
+        col_index = 0
+        for item in columns:
+            if col == item:
+                test_index = col_index
+                index_of_cols2.append(test_index+1)
+            col_index+=1
 
+    itr = 0
+    val_num = 0
+    condition_num = 0
+    intersection_list = []
+    for l in range(0,num_conditions):
+        for x in range(1,num_rows):
+            list_of_vals.append((x,np.take(table,x*num_cols+index_of_cols2[l])))
+        for val in range(0,len(list_of_vals)):
+            if conditions[condition_num][1] == "=":
+                if list_of_vals[val][1] == search_vals[l]:
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "!=":
+                if list_of_vals[val][1] != search_vals[l]:
+                    row_nums_matched.append(list_of_vals[val][0])
+            #print(row_nums_matched)
+        matched_rows_list.append(row_nums_matched)
+        if len(matched_rows_list) > 1:
+            if conditions[condition_num-1] == "and":
+                print("itr = " + (str(itr)))
+                intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                # print(intersection_list)
+                itr+=1
+            elif conditions[condition_num-1] == "or":
+                intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                itr +=1
+        # print("intersection list : " + str(intersection_list))
+        testing = index_of_cols1[:]
+        if l == num_conditions-1:
+            if not intersection_list:
+                print("The query did not return any results")
+            else:
+                # print(intersection_list)
+                for g in intersection_list:
+                    for x in range(0,len(index_of_cols1)):
+                        testing[x]= g*num_cols+index_of_cols1[x]
+                        np.put(table,g*num_cols+index_of_cols1[x],vals[x])
+
+        condition_num+=2
+
+    print(table)
+    return table
 
 def eval_create_table(table_name,cols):
     m=20 # number of rows
     index=0
     num_cols = len(cols)+1
-    table = np.chararray((m,num_cols),itemsize=10)
+    dtype = np.dtype([('key', int), ('first', 'S10'), ('last', 'S10'), ('address','S10')])
+    table = np.chararray((m,num_cols),itemsize=20)
     table.fill(0)
-    np.put(table, index, table_name)
+    np.put(table, index, "key")
     for x in range(0,num_cols-1):
         np.put(table, x+1,cols[x])
 
@@ -275,7 +357,9 @@ def eval_create_table(table_name,cols):
     np.put(table,34,"wills")
     np.put(table,37,"donald")
     np.put(table,38,"trump")
-    # print(table)
+    print(table)
+    print("\n")
+    test_sort(table)
 
     return table, num_cols, m
 
@@ -301,17 +385,63 @@ def eval_delete(table_name, conditions):
     #if table[len(table)-1] != -1: #There is an index TODO: Handle index
         #
     #else:
+<<<<<<< HEAD
 
 
+=======
+    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
+    columns = get_columns(table,num_cols)
+
+    cols = []
+    vals = []
+    deleted_rows = []
+    index_of_cols = []
+    list_of_vals = []
+    for item in conditions:
+        # print(item)
+        if item != "and" and item != "or":
+            cols.append(item[0])
+            vals.append(item[2])
+
+    for col in cols:
+        col_index = 0
+        for item in columns:
+            if col == item:
+                test_index = col_index
+                index_of_cols.append(test_index+1)
+            col_index+=1
+
+    for val in vals:
+        for x in range(1,num_rows):
+            # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
+            # print("Test: "+ str(np.take(table,num_cols*x+index_of_cols2[itr])))
+            if val == np.take(table,num_cols*x+index_of_cols[itr]):
+
+                itr+=1
+                break
+
+    for tuple in conditions:
+        col_name = tuple[0]
+        print(tuple)
+>>>>>>> 0d55851470ad179bad2905ba71061e147d62d92a
 
 
 
     #Remove those tuple(s) from the table
     return True
 
+def test_sort(table):
+    table.sort(axis=0)
+    print(table)
+    print("this is just a test, the table structure has not changed")
+
 def eval_create_index(index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
+<<<<<<< HEAD
     tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
+=======
+
+>>>>>>> 0d55851470ad179bad2905ba71061e147d62d92a
 
     for tuple in col_list:
         col_name = tuple[0]
@@ -335,5 +465,7 @@ def eval_drop_index(index_name, table_ref):
     return tempTable
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
-# eval_create_table("customers",("first","last","address","phone"))
-table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
+eval_create_table("customers",("first","last","address"))
+# table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
+# table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
+# eval_delete("customers",[("first","=","john")])

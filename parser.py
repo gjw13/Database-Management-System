@@ -71,7 +71,7 @@ def parse_expression(cmd):
     elif begin == "update":
         table_name, col_vals, conditions, parseFlag = parse_update(tokens, i+1)
         if not parseFlag:
-            eval_update(table_name, col_vals, conditions)
+            table = eval_update(table_name, col_vals, conditions)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -389,6 +389,7 @@ def parse_update(tokens, i):
     i+= 2 # move the tokens past the set token
     end_of_tuples = tokens.index("where")
     col_val_conditions = tokens[i:end_of_tuples]
+    # print(col_val_conditions)
 
     # iterate through the conditions, putting every trio in a tuple
     j = 0
@@ -400,6 +401,7 @@ def parse_update(tokens, i):
         else:
             col_vals.append(tuple)
             j+=3
+    print(col_vals)
     if not parseError:
         i = end_of_tuples
         conditions, i, parseError = parse_where(i, tokens)
