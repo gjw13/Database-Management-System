@@ -296,15 +296,14 @@ def get_columns(table,num_cols):
     return columns
 
 def eval_delete(table_name, conditions):
-    # TODO:
-    #Find the table with table name
-    table = [] # ASSUMPTION: the last column in the table is an index reference
+    tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
     #Find the tuple(s) with the relevant Conditions (using an index if it exists)
     #if table[len(table)-1] != -1: #There is an index TODO: Handle index
         #
     #else:
-    for tuple in conditions:
-        col_name = tuple[0]
+
+
+
 
 
     #Remove those tuple(s) from the table
@@ -312,9 +311,14 @@ def eval_delete(table_name, conditions):
 
 def eval_create_index(index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
-    
+    tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
 
-    return True
+    for tuple in col_list:
+        col_name = tuple[0]
+        ordering = tuple[1]
+        tempTable.addIndex(index_name, col_name, ordering)
+
+    return tempTable
 
 def eval_drop_table(table_name):
 
@@ -322,7 +326,13 @@ def eval_drop_table(table_name):
 
 def eval_drop_index(index_name, table_ref):
 
-    return True
+    tempTable = Table(10,10) # TODO: grab the correct table using table_ref
+
+    for tuple in tempTable.indicies:
+        if tuple[0] = index_name:
+            tempTable.indices.remove(tuple)
+
+    return tempTable
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address","phone"))
