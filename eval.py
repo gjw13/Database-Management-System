@@ -385,10 +385,6 @@ def eval_delete(table_name, conditions):
     #if table[len(table)-1] != -1: #There is an index TODO: Handle index
         #
     #else:
-<<<<<<< HEAD
-
-
-=======
     table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
     columns = get_columns(table,num_cols)
 
@@ -423,7 +419,6 @@ def eval_delete(table_name, conditions):
     for tuple in conditions:
         col_name = tuple[0]
         print(tuple)
->>>>>>> 0d55851470ad179bad2905ba71061e147d62d92a
 
 
 
@@ -437,11 +432,7 @@ def test_sort(table):
 
 def eval_create_index(index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
-<<<<<<< HEAD
     tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
-=======
-
->>>>>>> 0d55851470ad179bad2905ba71061e147d62d92a
 
     for tuple in col_list:
         col_name = tuple[0]
@@ -459,7 +450,7 @@ def eval_drop_index(index_name, table_ref):
     tempTable = Table(10,10) # TODO: grab the correct table using table_ref
 
     for tuple in tempTable.indicies:
-        if tuple[0] = index_name:
+        if tuple[0] == index_name:
             tempTable.indices.remove(tuple)
 
     return tempTable

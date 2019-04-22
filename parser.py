@@ -387,7 +387,21 @@ def parse_update(tokens, i):
     col_vals = []
 
     i+= 2 # move the tokens past the set token
-    end_of_tuples = tokens.index("where")
+    try:
+        end_of_tuples = tokens.index("where")
+    except:
+        j = 0
+        col_val_conditions = tokens[i:]
+        while (j <= len(col_val_conditions)-4):
+            tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2])
+            if not tuple:
+                parseError = True
+                j = len(col_val_conditions)-3
+            else:
+                col_vals.append(tuple)
+                j+=3
+        return table_name, col_vals, [], parseError
+
     col_val_conditions = tokens[i:end_of_tuples]
     # print(col_val_conditions)
 
