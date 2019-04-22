@@ -296,7 +296,7 @@ def eval_update(table_name,col_vals,conditions):
     intersection_list = []
     for l in range(0,num_conditions):
         for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table,x*num_cols+index_of_cols2[l])))
+            list_of_vals.append((x,np.take(table,x*num_cols+index_of_cols2[l]))) # TODO: index error here
         for val in range(0,len(list_of_vals)):
             if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == search_vals[l]:

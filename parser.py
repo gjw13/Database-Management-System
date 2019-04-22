@@ -392,7 +392,7 @@ def parse_update(tokens, i):
     except:
         j = 0
         col_val_conditions = tokens[i:]
-        while (j <= len(col_val_conditions)-4):
+        while (j <= len(col_val_conditions)-3):
             tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2])
             if not tuple:
                 parseError = True
@@ -407,7 +407,7 @@ def parse_update(tokens, i):
 
     # iterate through the conditions, putting every trio in a tuple
     j = 0
-    while (j <= len(col_val_conditions)-4):
+    while (j <= len(col_val_conditions)-3):
         tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2])
         if not tuple:
             parseError = True
