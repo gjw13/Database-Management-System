@@ -2,6 +2,7 @@
 # helpers
 from __future__ import print_function
 import numpy as np
+from table import *
 
 
 def eval_select(cols, tables, conditions):

@@ -13,7 +13,7 @@ class Table:
         i = 0
         col_index = -1
         while i < len(colNames):
-            if col_name = colNames[i]:
+            if col_name == colNames[i]:
                 col_index = i
                 i = len(colNames)
         self.indices.append((indexName, col_index, ordering))

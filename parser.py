@@ -5,7 +5,6 @@
 
 from eval import *
 
-#TODO: Handle insert, delete and update of tuples
 
 #######################################
 # PARSE EXP ###########################
@@ -148,7 +147,11 @@ def parse_table(i,tokens):
     table_list = table_info.split(", ")
 
     if (len(table_list) == 1): # Handle one table situation
-        tuple_list.append(table_list[0])
+        temp = table_list[0].split(" ")
+        if temp == table_list:
+            tuple_list.append(table_list[0])
+        else:
+            tuple_list.append((temp[0], temp[1]))
     else: # ASSUMPTION: Tables have aliases
         for tok in table_list:
             temp = tok.split(" ")
@@ -159,12 +162,12 @@ def parse_table(i,tokens):
                 parseFlag = True
 
     i = where_index
-    # print("Tables selected from: " , tuple_list)
+    print("Tables selected from: " , tuple_list)
     return tuple_list, i, parseFlag
 
 #######################################
 # PARSE WHERE #########################
-####################################### TODO: Error on 185 with three conditions
+#######################################
 def parse_where(i, tokens):
     i+=1 #this is now just past the where
     parseFlag = False
@@ -423,15 +426,16 @@ def parse_update(tokens, i):
     else:
         return table_name, col_vals, [], parseError
 
-def main():
-    cmd = ""
-    prompt = "> "
-    cmd_list = []
-    while cmd != "quit":
-        cmd = raw_input(prompt)
-        cmd_list.append(cmd)
-        tokens = parse_expression(cmd)
 
-
-
-main()
+# def main():
+#     cmd = ""
+#     prompt = "> "
+#     cmd_list = []
+#     while cmd != "quit":
+#         cmd = raw_input(prompt)
+#         cmd_list.append(cmd)
+#         tokens = parse_expression(cmd)
+#
+#
+#
+# main()
