@@ -11,7 +11,7 @@ from database import *
 #######################################
 # PARSE EXP ###########################
 #######################################
-def parse_expression(cmd):
+def parse_expression(cmd,database):
     # takes in sql command in string form
     # returns a list of tokens
 
@@ -33,7 +33,7 @@ def parse_expression(cmd):
     if begin == "select":
         cols, tables, conditions, parseFlag = parse_select(i,tokens)
         if not parseFlag:
-            eval_select(cols, tables, conditions)
+            eval_select(database, cols, tables, conditions)
     elif begin == "delete":
         for token in tokens:
             if token.lower() == "from":
@@ -43,36 +43,36 @@ def parse_expression(cmd):
         else:
             table_name, conditions, i, parseFlag = parse_delete(index+1, tokens)
             if not parseFlag:
-                eval_delete(table_name, conditions)
+                eval_delete(database,table_name, conditions)
     elif begin == "create":
         if tokens[i+1] == "table":
              table_name, columns, types, parseFlag = create_table(tokens,i)
              if not parseFlag:
-                 eval_create_table(table_name, columns)
+                 database = eval_create_table(database,table_name, columns)
         elif tokens[i+1] == "index":
             index_name, table_name, col_list, i, parseFlag = create_index(tokens, i+2)
             if not parseFlag:
-                eval_create_index(index_name, table_name, col_list)
+                eval_create_index(database, index_name, table_name, col_list)
     elif begin == "drop":
         if tokens[i+1] == "table":
             table_name,i, parseFlag = drop_table(tokens,i)
             if not parseFlag:
-                eval_drop_table(table_name)
+                database = eval_drop_table(database,table_name)
         elif tokens[i+1] == "index":
             dropped_index,table_ref,i, parseFlag = drop_index(tokens,i)
             if not parseFlag:
-                eval_drop_index(dropped_index, table_ref)
+                eval_drop_index(database,dropped_index, table_ref)
     elif begin == "insert":
         if tokens[i+1] == "into": # ASSUMPTION: only allowing for full tuples to be inserted
             table_name, values, parseFlag = parse_insert(tokens, i+1)
             if not parseFlag:
-                table = eval_insert(table_name, values)
+                table = eval_insert(database,table_name, values)
         else:
             parseFlag = True
     elif begin == "update":
         table_name, col_vals, conditions, parseFlag = parse_update(tokens, i+1)
         if not parseFlag:
-            table = eval_update(table_name, col_vals, conditions)
+            database = eval_update(database,table_name, col_vals, conditions)
     elif begin == "quit":
         print("Goodbye.")
     else:
@@ -81,7 +81,7 @@ def parse_expression(cmd):
     if parseFlag:
         print("Encountered an error during parsing. Try again.")
 
-    return tokens
+    return database, tokens
 
 #######################################
 # PARSE SELECT ########################
@@ -98,14 +98,14 @@ def parse_select(i,tokens):
         i+=1
 
     cols, i, parseFlag = parse_cols(i,tokens)
-    if (parseFlag):
-        return parseFlag
+    # if parseFlag:
+    #     return parseFlag
     tables, i, parseFlag = parse_table(i,tokens)
-    if (parseFlag):
-        return parseFlag
+    # if parseFlag:
+    #     return parseFlag
     conditions, i, parseFlag = parse_where(i,tokens)
-    if (parseFlag):
-        return parseFlag
+    # if parseFlag:
+    #     return parseFlag
 
     return cols, tables, conditions, parseFlag
 
@@ -284,7 +284,8 @@ def drop_table(tokens,i):
 
     # if table_name exists, drop it
     if not parseError:
-        print(table_name.upper() + " table successfully deleted.")
+        placeholder = True
+        # print(table_name.upper() + " table successfully deleted.")
     else:
         print("Error in deleting table " + table_name.upper() + ".")
 
@@ -427,17 +428,3 @@ def parse_update(tokens, i):
         return table_name, col_vals, conditions, parseError
     else:
         return table_name, col_vals, [], parseError
-
-
-# def main():
-#     cmd = ""
-#     prompt = "> "
-#     cmd_list = []
-#     while cmd != "quit":
-#         cmd = raw_input(prompt)
-#         cmd_list.append(cmd)
-#         tokens = parse_expression(cmd)
-#
-#
-#
-# main()

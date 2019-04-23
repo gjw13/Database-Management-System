@@ -9,3 +9,14 @@ class Database:
     def addRelation(self,relation):
         self.relationList.append(relation)
         self.numRelations += 1
+
+    def getRelation(self,table_name):
+        for relation in self.relationList:
+            if relation.name == table_name.upper():
+                return relation
+
+    def tableExists(self,table_name):
+        for relation in self.relationList:
+            if relation.name == table_name.upper():
+                return True
+        return False

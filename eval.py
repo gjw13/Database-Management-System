@@ -3,15 +3,27 @@
 from __future__ import print_function
 import numpy as np
 from table import *
-<<<<<<< HEAD
-=======
 from database import *
->>>>>>> 8c5ebb5f578045e86861d66ce87060076e3f31c1
 
 
-def eval_select(cols, tables, conditions):
-    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
-    columns = get_columns(table,num_cols) # function return list of column names
+
+def eval_select(database, cols, tables, conditions):
+    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
+    # columns = database.relationList.index(tables).getColNames()
+    if len(tables) == 1:
+        if database.tableExists(tables[0]):
+            table = database.getRelation(tables[0])
+        else:
+            print("Table does not exist.")
+            return 0
+    else:
+        # join
+        # table = database.getRelation("CUSTOMERS")
+        print("there are multiple tables to select from")
+    table = database.getRelation(tables[0])
+    columns = table.getColNames()
+    # print(table.relation)
+
     if cols[0] != "*":
         index_of_cols = []
         col_index=0
@@ -25,30 +37,30 @@ def eval_select(cols, tables, conditions):
                 col_index+=1
         testing = index_of_cols[:]
         if not conditions:
-            simple_select(table,num_rows,num_cols,index_of_cols,testing)
+            simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
         elif conditions:
             num_conditions = (len(conditions)+1)/2
             if num_conditions == 1:
-                simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols)
+                simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
             else:
-                complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions)
+                complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
 
     elif cols[0]=="*":
         # select all the columns
         index_of_cols = []
-        for x in range(1,num_cols):
+        for x in range(1,table.numCols):
             index_of_cols.append(x)
         testing = index_of_cols[:]
         if not conditions:
             # handles simple select statement with no conditions
-            simple_select(table,num_rows,num_cols,index_of_cols,testing)
+            simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
         elif conditions:
             # handles a complex select statement
             num_conditions = (len(conditions)+1)/2
             if num_conditions == 1:
-                simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols)
+                simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
             else:
-                complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions)
+                complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     col_index = 0
@@ -193,7 +205,8 @@ def simple_select(table,num_rows,num_cols,index_of_cols,testing):
     for g in range(1,num_rows):
         for x in range(0,len(index_of_cols)):
             testing[x]= g*num_cols+index_of_cols[x]
-        test = np.take(table,testing)
+        # print(testing)
+        test = np.take(table.relation,testing)
         print_output(test)
 
 def print_output(result):
@@ -221,17 +234,22 @@ def restore_state():
 
     # return table
 
-def eval_insert(table_name,values):
-    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
-    columns = get_columns(table,num_cols)
+def eval_insert(database,table_name,values):
+    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
+    # columns = get_columns(table,num_cols)
+    print(values)
+    table = database.getRelation(table_name)
+    columns = table.getColNames()
+    num_rows = table.numRows
+    num_cols = table.numCols
     cols = []
     index_of_cols = []
     vals = []
     row_num = 1 # if we want it sorted, just figure out a way to set row_num
-    test_values = [("first","last","address"),"values",("adam","jones","arizona")]
-    for col in test_values[0]:
+    # test_values = [("first","last","address"),"values",("adam","jones","arizona")]
+    for col in values[0]:
         cols.append(col)
-    for val in test_values[2]:
+    for val in values[2]:
         vals.append(val)
     for col in cols:
         col_index = 0
@@ -242,6 +260,7 @@ def eval_insert(table_name,values):
             col_index+=1
 
     table.relation.resize((num_rows+1,num_cols))
+    table.setNumRows(num_rows+1)
     row_num = num_rows
     np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(vals)):
@@ -249,12 +268,14 @@ def eval_insert(table_name,values):
     print(table)
     return table
 
-def eval_update(table_name,col_vals,conditions):
+def eval_update(database,table_name,col_vals,conditions):
     table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
     print(col_vals)
     print(conditions)
-    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
-    columns = get_columns(table,num_cols)
+    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
+    # columns = get_columns(table,num_cols)
+    table = database.getRelation(table_name)
+    columns = table.getColNames()
     num_conditions = (len(conditions)+1)/2
     index_of_col_conditions = 0
     index_of_col_value = 0
@@ -336,39 +357,28 @@ def eval_update(table_name,col_vals,conditions):
         condition_num+=2
 
     print(table)
-    return table
+    return database
 
-def eval_create_table(table_name,cols):
-    m=20 # number of rows
+def eval_create_table(database,table_name,cols):
+    m=1 # number of rows
     index=0
     num_cols = len(cols)+1
     # dtype = np.dtype([('key', int), ('first', 'S10'), ('last', 'S10'), ('address','S10')])
     # table = np.chararray((m,num_cols),itemsize=20)
-    table = Table(m,4)
+    table = Table(m,num_cols)
     table.setName(table_name)
+    table.setNumCols(num_cols)
+    table.setNumRows(m)
     table.relation.fill(0)
     np.put(table.relation, index, "key")
-    # print(table.relation)
-    for x in range(0,num_cols-1):
-        np.put(table.relation, x+1,cols[x])
-
-    # loop to populate columns of our test db
-    for i in range(1,m):
-        table = create_test_db(table,index,num_cols,i)
-        index += num_cols
-    # print(table)
-    columns = get_columns(table,num_cols)
-    np.put(table.relation,29,"jane")
-    np.put(table.relation,30,"doe")
-    np.put(table.relation,33,"greg")
-    np.put(table.relation,34,"wills")
-    np.put(table.relation,37,"donald")
-    np.put(table.relation,38,"trump")
+    for x in range(1,table.numCols):
+        np.put(table.relation, x,cols[x-1])
+    database.addRelation(table)
     print(table.relation)
-    print("\n")
-    # test_sort(table)
 
-    return table, num_cols, m
+    # print(str(table_name) + " successfully created")
+
+    return database
 
 def create_test_db(table,index,num_cols,row_num):
     np.put(table.relation, row_num*num_cols, row_num)
@@ -386,13 +396,13 @@ def get_columns(table,num_cols):
     columns = np.take(table.relation,index_of_cols)
     return columns
 
-def eval_delete(table_name, conditions):
+def eval_delete(database,table_name, conditions):
     tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
     #Find the tuple(s) with the relevant Conditions (using an index if it exists)
     #if table[len(table)-1] != -1: #There is an index TODO: Handle index
         #
     #else:
-    table,num_cols,num_rows = eval_create_table("customers",("first","last","address"))
+    database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     columns = get_columns(table,num_cols)
 
     cols = []
@@ -436,7 +446,7 @@ def test_sort(table):
     print(table)
     print("this is just a test, the table structure has not changed")
 
-def eval_create_index(index_name, table_name, col_list):
+def eval_create_index(database,index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
     tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
 
@@ -447,11 +457,20 @@ def eval_create_index(index_name, table_name, col_list):
 
     return tempTable
 
-def eval_drop_table(table_name):
-    # TODO
-    return True
+def eval_drop_table(database,table_name):
+    table_exists = False
+    for relation in database.relationList:
+        if relation.name == table_name.upper():
+            table_exists = True
+            database.relationList.remove(relation)
+    if table_exists:
+        print(table_name.upper() + " successfully deleted.")
+        return database
+    else:
+        print("Could not find relation with the name " + str(table_name.upper()))
+        return database
 
-def eval_drop_index(index_name, table_ref):
+def eval_drop_index(database,index_name, table_ref):
 
     tempTable = Table(10,10) # TODO: grab the correct table using table_ref
 
@@ -461,16 +480,12 @@ def eval_drop_index(index_name, table_ref):
 
     return tempTable
 
-<<<<<<< HEAD
-
-
-
 def merge_scan(table1, table2, joining_attr):
     # Sort each table on the joining attr
     # Match the rows based on the joining attr
     # Create one large table with all the new rows
     return 0
-=======
+
 # def print_relation(table):
 #     index_list = []
 #     for x in range(0,table.numRows):
@@ -481,47 +496,81 @@ def merge_scan(table1, table2, joining_attr):
 def load_relations():
     # this works alright but waiting to talk with you about exactly what he wants
     database = Database()
-    r1 = Table(100,100)
-    database.addRelation(r1)
-    r1.setName("Relation 1")
-
-    for row in range(0,r1.numRows):
-        for col in range(0,r1.numCols):
-            np.put(r1.relation,row*r1.numCols+col,(col+1)*(row+1))
-    # print(r1.relation)
-
-    # this might be what we're looking for 5 rows and cols for visibility
+    # this might be what we're looking for - 5 rows and cols for visibility
     test = Table(5,5)
-    database.addRelation(test)
+    test.setName("test")
     for row in range(0,test.numRows):
         for col in range(0,test.numCols):
             np.put(test.relation,row*test.numCols+col,row)
+    database.addRelation(test)
     print(test.relation)
 
+    #*** Relation 1
+    r1 = Table(100,100)
+    r1.setName("Relation1")
+    for row in range(0,r1.numRows):
+        for col in range(0,r1.numCols):
+            np.put(r1.relation,row*r1.numCols+col,(col+1)*(row+1))
+    database.addRelation(r1)
+    # print(r1.relation)
 
+    #*** Relation 2
     r2 = Table(20,20)
-    database.addRelation(r2)
-    r2.setName("Relation 2")
+    r2.setName("Relation2")
     for row in range(0,r2.numRows):
         for col in range(0,r2.numCols):
             np.put(r2.relation,row*r2.numCols+col,(col+1)*(row+1))
+    database.addRelation(r2)
     # print(r2.relation)
     # print_relation(r2)
 
+    #*** Relation 3
     r3 = Table(40,40)
-    database.addRelation(r3)
-    r3.setName("Relation 3")
+    r3.setName("Relation3")
     r3.relation.fill(1)
     for i in range(0,r3.numCols):
         np.put(r3.relation, i*r3.numCols, i)
     np.put(r3.relation,0,1)
+    database.addRelation(r3)
     # print(r3.relation)
+
+    #*** loads test relation
+    index=0
+    num_cols=3
+    m=20
+    cols = ["first","last","address"]
+    table = Table(m,num_cols+1)
+    table.setName("customers")
+    table.relation.fill(0)
+    np.put(table.relation, index, "key")
+
+    for x in range(0,num_cols):
+        np.put(table.relation, x+1,cols[x])
+
+    # loop to populate columns of our test db
+    for i in range(1,m):
+        table = create_test_db(table,index,num_cols+1,i)
+        index += num_cols
+    # print(table)
+    columns = get_columns(table,num_cols)
+    np.put(table.relation,29,"jane")
+    np.put(table.relation,30,"doe")
+    np.put(table.relation,33,"greg")
+    np.put(table.relation,34,"wills")
+    np.put(table.relation,37,"donald")
+    np.put(table.relation,38,"trump")
+    print(table.relation)
+    print("\n")
+
+    database.addRelation(table)
+    for relation in database.relationList:
+        print(relation.name)
+
     return database
->>>>>>> 8c5ebb5f578045e86861d66ce87060076e3f31c1
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address"))
 # table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
 # table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
 # eval_delete("customers",[("first","=","john")])
-database = load_relations()
+# database = load_relations()
