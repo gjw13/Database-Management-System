@@ -5,6 +5,7 @@
 
 from eval import *
 from table import *
+from database import *
 
 #TODO: Handle insert, delete and update of tuples
 
