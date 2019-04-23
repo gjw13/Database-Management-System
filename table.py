@@ -32,7 +32,11 @@ class Table:
         for x in range(1,self.numCols):
             index_of_cols.append(x)
         columns = np.take(self.relation,index_of_cols)
+        self.colNames = columns[:]
         return columns
+
+    def columnExists(self,col_name):
+        return col_name in self.colNames
 
     def setNumCols(self,numCols):
         self.numCols = numCols

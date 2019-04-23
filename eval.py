@@ -22,8 +22,10 @@ def eval_select(database, cols, tables, conditions):
         print("there are multiple tables to select from")
     table = database.getRelation(tables[0])
     columns = table.getColNames()
-    # print(table.relation)
-
+    for cond in conditions:
+        if not table.columnExists(cond[0]):
+            print("Column name \'" + str(cond[0]) + "\' did not match existing column in relation. ")
+            return 0
     if cols[0] != "*":
         index_of_cols = []
         col_index=0
@@ -245,13 +247,17 @@ def eval_insert(database,table_name,values):
     cols = []
     index_of_cols = []
     vals = []
+    print(values)
     row_num = 1 # if we want it sorted, just figure out a way to set row_num
-    # test_values = [("first","last","address"),"values",("adam","jones","arizona")]
-    for col in values[0]:
+    test_values = [("first","last"),"values",("adam","jones")]
+    for col in test_values[0]:
         cols.append(col)
-    for val in values[2]:
+    for val in test_values[2]:
         vals.append(val)
     for col in cols:
+        if not table.columnExists(col):
+            print("Column name \'" + str(col) + "\' did not match existing column in relation. ")
+            return 0
         col_index = 0
         for item in columns:
             if col == item:
@@ -265,15 +271,12 @@ def eval_insert(database,table_name,values):
     np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(vals)):
         np.put(table.relation,row_num*num_cols+index_of_cols[x],vals[x])
-    print(table)
     return table
 
 def eval_update(database,table_name,col_vals,conditions):
     table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
     print(col_vals)
     print(conditions)
-    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
-    # columns = get_columns(table,num_cols)
     table = database.getRelation(table_name)
     columns = table.getColNames()
     num_conditions = (len(conditions)+1)/2
@@ -369,6 +372,7 @@ def eval_create_table(database,table_name,cols):
     table.setName(table_name)
     table.setNumCols(num_cols)
     table.setNumRows(m)
+    table.setColNames(cols)
     table.relation.fill(0)
     np.put(table.relation, index, "key")
     for x in range(1,table.numCols):
@@ -387,14 +391,6 @@ def create_test_db(table,index,num_cols,row_num):
     np.put(table.relation, row_num*num_cols+3,"3700 O St. NW")
 
     return table
-
-# return a list of column names in the given relation
-def get_columns(table,num_cols):
-    index_of_cols = []
-    for x in range(1,num_cols):
-        index_of_cols.append(x)
-    columns = np.take(table.relation,index_of_cols)
-    return columns
 
 def eval_delete(database,table_name, conditions):
     tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
@@ -495,7 +491,7 @@ def merge_scan(table1, table2, joining_attr):
         while i < sorted_t1.numRows:
             j = 0
             while j < sorted_t1.numCols:
-
+                test = True
     # Create one large table with all the new rows
     return 0
 
@@ -565,7 +561,7 @@ def load_relations():
         table = create_test_db(table,index,num_cols+1,i)
         index += num_cols
     # print(table)
-    columns = get_columns(table,num_cols)
+    columns = table.getColNames()
     np.put(table.relation,29,"jane")
     np.put(table.relation,30,"doe")
     np.put(table.relation,33,"greg")
