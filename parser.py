@@ -368,21 +368,18 @@ def parse_insert(tokens, i):
     values = []
 
     # move i beyond the values keyword
-    i += 2
+    i += 3
 
-    # ASSUMPTION: there's parenthesis around the values, seperated by commas
-    updated_token = tokens[i].replace("(", "")
-    tokens[i] = updated_token
-    updated_token = tokens[len(tokens)-1].replace(")", "")
-    tokens[len(tokens)-1] = updated_token
-
-    if not updated_token:
-        parseError = True
-    else:
-        temp_vals = tokens[i:]
-        for val in temp_vals:
-            new_val = val.replace(",", "")# .replace('(','').replace(')','')
-            values.append(new_val)
+    temp_vals = tokens[i:]
+    for tok in temp_vals:
+        new_tok = tok
+        if '(' in tok:
+            new_tok = new_tok.replace('(', '')
+        if ')' in tok:
+            new_tok = new_tok.replace(')', '')
+        if ',' in tok:
+            new_tok = new_tok.replace(',', '')
+        values.append(new_tok)
 
     return table_name, values, parseError
 

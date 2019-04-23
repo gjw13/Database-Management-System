@@ -237,7 +237,7 @@ def restore_state():
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
-    print(values)
+    #print(values)
     table = database.getRelation(table_name)
     columns = table.getColNames()
     num_rows = table.numRows
