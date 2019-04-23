@@ -481,23 +481,137 @@ def eval_drop_index(database,index_name, table_ref):
     print("Could not find index with name " + index_name)
     return database
 
-def merge_scan(table1, table2, joining_attr):
-    # Sort each table on the joining attr
-    sorted_t1 = np.sort(table1.relation, axis = table1.colNames.index(joining_attr))
-    sorted_t2 = np.sort(table2.relation, axis = table2.colNames.index(joining_attr))
-    # Match the rows based on the joining attr
-    size_check = sorted_t1.numRows > sorted_t2.numRows
-    if size_check:
-        result_table = Table(sorted_t2.numRows, sorted_t1.numCols + sorted_t2.numCols - 1)
-    else:
-        result_table = Table(sorted_t1.numRows, sorted_t1.numCols + sorted_t2.numCols - 1)
-        i = 0
-        while i < sorted_t1.numRows:
-            j = 0
-            while j < sorted_t1.numCols:
 
-    # Create one large table with all the new rows
-    return 0
+def list_sort(list, index):
+    list.sort(key = lambda x:x[0])
+    return list
+
+
+def merge_scan(table1, table2, joining_attr):
+    # TESTING
+    # joining_attr = "col1"
+    # table1 = Table(6,5)
+    # list1 = ["col1", "col2", "col3", "col4", "col5", "col6"]
+    # table1.setColNames(list1)
+    # np.put(table1.relation,0,"44")
+    # np.put(table1.relation,1,"2")
+    # np.put(table1.relation,2,"3")
+    # np.put(table1.relation,3,"4")
+    # np.put(table1.relation,4,"5")
+    # np.put(table1.relation,5,"9")
+    # np.put(table1.relation,6,"2")
+    # np.put(table1.relation,7,"3")
+    # np.put(table1.relation,8,"4")
+    # np.put(table1.relation,9,"5")
+    # np.put(table1.relation,10,"8")
+    # np.put(table1.relation,11,"2")
+    # np.put(table1.relation,12,"3")
+    # np.put(table1.relation,13,"4")
+    # np.put(table1.relation,14,"5")
+    # np.put(table1.relation,15,"7")
+    # np.put(table1.relation,16,"2")
+    # np.put(table1.relation,17,"3")
+    # np.put(table1.relation,18,"4")
+    # np.put(table1.relation,19,"5")
+    # np.put(table1.relation,20,"6")
+    # np.put(table1.relation,21,"2")
+    # np.put(table1.relation,22,"3")
+    # np.put(table1.relation,23,"4")
+    # np.put(table1.relation,24,"5")
+    # np.put(table1.relation,25,"5")
+    # np.put(table1.relation,26,"2")
+    # np.put(table1.relation,27,"3")
+    # np.put(table1.relation,28,"4")
+    # np.put(table1.relation,29,"5")
+    # table2 = Table(5,5)
+    # np.put(table2.relation,0,"44")
+    # np.put(table2.relation,1,"12")
+    # np.put(table2.relation,2,"13")
+    # np.put(table2.relation,3,"14")
+    # np.put(table2.relation,4,"15")
+    # np.put(table2.relation,5,"9")
+    # np.put(table2.relation,6,"12")
+    # np.put(table2.relation,7,"13")
+    # np.put(table2.relation,8,"14")
+    # np.put(table2.relation,9,"15")
+    # np.put(table2.relation,10,"8")
+    # np.put(table2.relation,11,"12")
+    # np.put(table2.relation,12,"13")
+    # np.put(table2.relation,13,"14")
+    # np.put(table2.relation,14,"15")
+    # np.put(table2.relation,15,"7")
+    # np.put(table2.relation,16,"12")
+    # np.put(table2.relation,17,"13")
+    # np.put(table2.relation,18,"14")
+    # np.put(table2.relation,19,"15")
+    # np.put(table2.relation,20,"6")
+    # np.put(table2.relation,21,"12")
+    # np.put(table2.relation,22,"13")
+    # np.put(table2.relation,23,"14")
+    # np.put(table2.relation,24,"15")
+    # table2.setColNames(["col1", "col7", "col6", "col8", "col9"])
+
+    # Check if the joining_attr is a number
+    # Sort each table on the joining attr
+    try:
+        int_val = int(table1.relation[0,table1.colNames.index(joining_attr)])
+        temp_t1 = table1.relation.tolist()
+        for line in temp_t1:
+            line[table1.colNames.index(joining_attr)] = int(line[table1.colNames.index(joining_attr)])
+        temp_t2 = table2.relation.tolist()
+        for line in temp_t2:
+            line[table2.colNames.index(joining_attr)] = int(line[table2.colNames.index(joining_attr)])
+        sorted_t1 = list_sort(temp_t1, table1.colNames.index(joining_attr))
+        sorted_t2 = list_sort(temp_t2, table2.colNames.index(joining_attr))
+    except:
+        sorted_t1 = list_sort(table1.relation.tolist(), table1.colNames.index(joining_attr))
+        sorted_t2 = list_sort(table2.relation.tolist(), table2.colNames.index(joining_attr))
+
+    # Match the rows based on the joining attr
+    size_check = len(sorted_t1) > len(sorted_t2)
+    if size_check:
+        result_table = Table(len(sorted_t2), len(sorted_t1[0]) + len(sorted_t2[0]) - 1)
+        result_table.setColNames(table2.getColNames())
+        result_table.setColNames(table1.getColNames())
+        tempColNames = list(dict.fromkeys(result_table.getColNames()))
+        result_table.colNames = []
+        result_table.setColNames(tempColNames)
+        i = 0
+        while i < len(sorted_t2): # Rows
+            j = 0
+            while j < len(sorted_t2[0]): # Cols
+                result_table.relation[i,j] = sorted_t2[i][j]
+                j+=1
+            k = 0
+            while k < len(sorted_t1[0]): # Cols
+                if k != table1.colNames.index(joining_attr):
+                    result_table.relation[i,k+j-1] = sorted_t1[i][k]
+                k+=1
+            i+=1
+        return result_table
+    else:
+        result_table = Table(len(sorted_t1), len(sorted_t1[0]) + len(sorted_t2[0]) - 1)
+        result_table.setColNames(table1.getColNames())
+        result_table.setColNames(table2.getColNames())
+        tempColNames = list(dict.fromkeys(result_table.getColNames()))
+        result_table.colNames = []
+        result_table.setColNames(tempColNames)
+        i = 0
+        while i < len(sorted_t1): # Rows
+            j = 0
+            while j < len(sorted_t1[0]): # Cols
+                result_table.relation[i,j] = sorted_t1[i][j]
+                j+=1
+            k = 0
+            while k < len(sorted_t2[0]): # Cols
+                if k != table2.colNames.index(joining_attr):
+                    result_table.relation[i,k+j-1] = sorted_t2[i][k]
+                k+=1
+            i+=1
+        return result_table
+
+
+
 
 # def print_relation(table):
 #     index_list = []

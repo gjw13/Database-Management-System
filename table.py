@@ -14,7 +14,7 @@ class Table:
     def setName(self,table_name):
         self.name = table_name.upper()
 
-    def addIndex(indexName, col_name, ordering):
+    def addIndex(self, indexName, col_name, ordering):
         i = 0
         col_index = -1
         while i < len(colNames):
@@ -23,7 +23,7 @@ class Table:
                 i = len(colNames)
         self.indices.append((indexName, col_index, ordering))
 
-    def setColNames(col_names):
+    def setColNames(self, col_names):
         for col_name in col_names:
             self.colNames.append(col_name)
 
