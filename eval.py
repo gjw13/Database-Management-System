@@ -443,7 +443,7 @@ def eval_create_index(index_name, table_name, col_list):
     return tempTable
 
 def eval_drop_table(table_name):
-
+    # TODO
     return True
 
 def eval_drop_index(index_name, table_ref):
@@ -455,6 +455,15 @@ def eval_drop_index(index_name, table_ref):
             tempTable.indices.remove(tuple)
 
     return tempTable
+
+
+
+
+def merge_scan(table1, table2, joining_attr):
+    # Sort each table on the joining attr
+    # Match the rows based on the joining attr
+    # Create one large table with all the new rows
+    return 0
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 eval_create_table("customers",("first","last","address"))
