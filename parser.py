@@ -4,6 +4,7 @@
 # Professor Ophir Frieder
 
 from eval import *
+from table import *
 
 
 #######################################
