@@ -4,17 +4,17 @@
 *Possible Grammar: https://www.jooq.org/doc/latest/manual/sql-building/sql-parser/sql-parser-grammar/*
 
 TO DO LIST (4/19)
-  1. Finish eval_delete()
+  1. Finish eval_delete() - if time allows
   2. ~~Incorporate table class into existing evaluator and parser (mostly done)~~
-  3. Look into incorporating < and >
+  3. ~~Look into incorporating < and >~~
   4. Get indexes to work --> basically check the values of the indexed col first
       1. eval_select
       3. eval_delete
       4. eval_update  
   5. Relational schema
-      a. ~~Create a way to keep track of tables (list of tables)~~
-      b. Parser accounts for aliases
-      c. Write a join algorithm (probably merge-scan) but could be nested
+      1. ~~Create a way to keep track of tables (list of tables)~~
+      2. Parser accounts for aliases
+      3. ~~Write a join algorithm (probably merge-scan) but could be nested~~
 
 Parser TODO:
   1. Tokenize the input

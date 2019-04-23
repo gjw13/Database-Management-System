@@ -29,8 +29,11 @@ def eval_select(database, cols, tables, conditions):
         print("there are multiple tables to select from")
     table = database.getRelation(tables[0])
     columns = table.getColNames()
-    # print(table.relation)
-
+    for cond in conditions:
+        if cond != "and" and cond != "or":
+            if not table.columnExists(cond[0]):
+                print("Column name \'" + str(cond[0]) + "\' did not match existing column in relation. ")
+                return 0
     if cols[0] != "*":
         index_of_cols = []
         col_index=0
@@ -70,6 +73,7 @@ def eval_select(database, cols, tables, conditions):
                 complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
+    # print("complex where)")
     col_index = 0
     condition_num = 0
     matched_rows_list = []
@@ -89,74 +93,59 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
                 col_index+=1
         list_of_vals = []
         row_nums_matched = []
-        if conditions[condition_num][1] == "=":
-            for x in range(1,num_rows):
-                # print(np.take(table,x*num_cols+col_index+1))
-                list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
-            # print(list_of_vals)
-            for val in range(0,len(list_of_vals)):
+        for x in range(1,num_rows):
+            # print(np.take(table,x*num_cols+col_index+1))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+        # print(list_of_vals)
+        for val in range(0,len(list_of_vals)):
+            if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == the_value:
                     row_nums_matched.append(list_of_vals[val][0])
-            # print(row_nums_matched)
-            matched_rows_list.append(row_nums_matched)
-            # print(matched_rows_list)
-            if len(matched_rows_list) > 1:
-                if conditions[condition_num-1] == "and":
-                    print("itr = " + (str(itr)))
-                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
-                    matched_rows_list[0] = intersection_list[:]
-                    # print(intersection_list)
-                    itr+=1
-                elif conditions[condition_num-1] == "or":
-                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
-                    matched_rows_list[0] = intersection_list[:]
-                    # print(intersection_list)
-                    itr +=1
-                # print(intersection_list)
-            testing = index_of_cols[:]
-            if l == num_conditions-1:
-                if not intersection_list:
-                    print("The query did not return any results")
-                else:
-                    for g in intersection_list:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
-                        test = np.take(table.relation,testing)
-                        print_output(test)
-        elif conditions[condition_num][1] == "!=":
-            # print("in the correct if else")
-            for x in range(1,num_rows):
-                list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
-            for val in range(0,len(list_of_vals)):
+            elif conditions[condition_num][1] == "!=":
                 if list_of_vals[val][1] != the_value:
                     row_nums_matched.append(list_of_vals[val][0])
-            matched_rows_list.append(row_nums_matched)
-            # print(matched_rows_list)
-            if len(matched_rows_list) > 1:
-                if conditions[condition_num-1] == "and":
-                    intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
-                    matched_rows_list[0] = intersection_list[:]
-                    # print(intersection_list)
-                    itr += 1
-                elif conditions[condition_num-1] == "or":
-                    intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
-                    matched_rows_list[0] = intersection_list[:]
-                    # print(intersection_list)
-                    itr +=1
-            testing = index_of_cols[:]
-            if l == num_conditions-1:
-                if not intersection_list:
-                    print("The query did not return any results")
-                else:
-                    for g in intersection_list:
-                        for x in range(0,len(index_of_cols)):
-                            testing[x]= g*num_cols+index_of_cols[x]
-                        # result.append(np.take(table,testing))
-                        test = np.take(table.relation,testing)
-                        print_output(test)
+            elif conditions[condition_num][1] == "<":
+                if int(list_of_vals[val][1]) < int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">":
+                if int(list_of_vals[val][1]) > int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "<=":
+                if int(list_of_vals[val][1]) <= int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">=":
+                if int(list_of_vals[val][1]) >= int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+        print(row_nums_matched)
+        matched_rows_list.append(row_nums_matched)
+        # print(matched_rows_list)
+        if len(matched_rows_list) > 1:
+            if conditions[condition_num-1] == "and":
+                print("itr = " + (str(itr)))
+                intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                # print(intersection_list)
+                itr+=1
+            elif conditions[condition_num-1] == "or":
+                intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                # print(intersection_list)
+                itr +=1
+            # print(intersection_list)
+        testing = index_of_cols[:]
+        if l == num_conditions-1:
+            if not intersection_list:
+                print("The query did not return any results")
+            else:
+                for g in intersection_list:
+                    for x in range(0,len(index_of_cols)):
+                        testing[x]= g*num_cols+index_of_cols[x]
+                    test = np.take(table.relation,testing)
+                    print_output(test)
         condition_num += 2
 
 def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
+    # print("simple where")
     col_index = 0
     first_col = conditions[0][0]
     first_val = conditions[0][2]
@@ -168,44 +157,40 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
             col_index+=1
     list_of_vals = []
     row_nums_matched = []
-    if conditions[0][1] == "=":
-        for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
-        # print(list_of_vals)
-        for val in range(0,len(list_of_vals)):
+
+    for x in range(1,num_rows):
+        list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+    # print(list_of_vals)
+    for val in range(0,len(list_of_vals)):
+        if conditions[0][1] == "=":
             if list_of_vals[val][1] == first_val:
                 row_nums_matched.append(list_of_vals[val][0])
-        if not row_nums_matched:
-            print("The query did not return any results")
-        else:
-            # print(row_nums_matched)
-            result = []
-            testing = index_of_cols[:]
-            for g in row_nums_matched:
-                for x in range(0,len(index_of_cols)):
-                    testing[x]= g*num_cols+index_of_cols[x]
-                test = np.take(table.relation,testing)
-                print_output(test)
-    elif conditions[0][1] == "!=":
-        for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
-        # print(list_of_vals)
-        for val in range(0,len(list_of_vals)):
+        elif conditions[0][1] == "!=":
             if list_of_vals[val][1] != first_val:
                 row_nums_matched.append(list_of_vals[val][0])
-        if not row_nums_matched:
-            print("The query did not return any results")
-        else:
-            # print(row_nums_matched)
-            result = []
-            # must select indices of cols for each row in row_nums_matched
-            testing = index_of_cols[:]
-            for g in row_nums_matched:
-                for x in range(0,len(index_of_cols)):
-                    testing[x]= g*num_cols+index_of_cols[x]
-
-                test = np.take(table.relation,testing)
-                print_output(test)
+        elif conditions[0][1] == "<":
+            if int(list_of_vals[val][1]) < int(first_val):
+                row_nums_matched.append(list_of_vals[val][0])
+        elif conditions[0][1] == ">":
+            if int(list_of_vals[val][1]) > int(first_val):
+                row_nums_matched.append(list_of_vals[val][0])
+        elif conditions[0][1] == ">=":
+            if int(list_of_vals[val][1]) >= int(first_val):
+                row_nums_matched.append(list_of_vals[val][0])
+        elif conditions[0][1] == "<=":
+            if int(list_of_vals[val][1]) <= int(first_val):
+                row_nums_matched.append(list_of_vals[val][0])
+    if not row_nums_matched:
+        print("The query did not return any results")
+    else:
+        # print(row_nums_matched)
+        result = []
+        testing = index_of_cols[:]
+        for g in row_nums_matched:
+            for x in range(0,len(index_of_cols)):
+                testing[x]= g*num_cols+index_of_cols[x]
+            test = np.take(table.relation,testing)
+            print_output(test)
 
 # handles a simple select statement without conditions
 def simple_select(table,num_rows,num_cols,index_of_cols,testing):
@@ -227,15 +212,16 @@ def print_output(result):
     print("")
     # print("------------------------------")
 
-def save_state(table):
+def save_state(database):
     file = "outfile"
-    table.tofile(file,sep=",",format="%s")
+    # database.getRelation("CUSTOMERS").relation.tofile(file,sep="")
+    database.getRelation("CUSTOMERS").relation.dump(file)
     # np.save(file,table)
 
 def restore_state():
     file = "outfile"
     # table.fromfile(file,sep=",",format="%s")
-    # table = np.load(file)
+    table = np.load(file)
     # this isn't working but simple writing to text file is just as easy
     # could also just store commands in text file and rerun them
 
@@ -391,7 +377,7 @@ def create_test_db(table,index,num_cols,row_num):
     np.put(table.relation, row_num*num_cols, row_num)
     np.put(table.relation, row_num*num_cols+1,"john")
     np.put(table.relation, row_num*num_cols+2,"smith")
-    np.put(table.relation, row_num*num_cols+3,"3700 O St. NW")
+    np.put(table.relation, row_num*num_cols+3,"22")
 
     return table
 
@@ -625,49 +611,48 @@ def merge_scan(table1, table2, joining_attr):
 def load_relations():
     # this works alright but waiting to talk with you about exactly what he wants
     database = Database()
-    # this might be what we're looking for - 5 rows and cols for visibility
-    test = Table(5,5)
-    test.setName("test")
-    for row in range(0,test.numRows):
-        for col in range(0,test.numCols):
-            np.put(test.relation,row*test.numCols+col,row)
-    database.addRelation(test)
-    print(test.relation)
 
     #*** Relation 1
-    r1 = Table(100,100)
+    r1 = Table(100,2)
     r1.setName("Relation1")
     for row in range(0,r1.numRows):
         for col in range(0,r1.numCols):
-            np.put(r1.relation,row*r1.numCols+col,(col+1)*(row+1))
+            np.put(r1.relation,row*r1.numCols+col,row+1)
     database.addRelation(r1)
-    # print(r1.relation)
+    print(r1.relation)
 
     #*** Relation 2
-    r2 = Table(20,20)
+    r2 = Table(1000,2)
     r2.setName("Relation2")
     for row in range(0,r2.numRows):
         for col in range(0,r2.numCols):
-            np.put(r2.relation,row*r2.numCols+col,(col+1)*(row+1))
+            np.put(r2.relation,row*r2.numCols+col,row+1)
     database.addRelation(r2)
-    # print(r2.relation)
-    # print_relation(r2)
+    print(r2.relation)
 
     #*** Relation 3
-    r3 = Table(40,40)
+    r3 = Table(100,2)
     r3.setName("Relation3")
     r3.relation.fill(1)
-    for i in range(0,r3.numCols):
-        np.put(r3.relation, i*r3.numCols, i)
-    np.put(r3.relation,0,1)
+    for row in range(0,r3.numRows):
+        np.put(r3.relation, row*r3.numCols, row+1)
     database.addRelation(r3)
-    # print(r3.relation)
+    print(r3.relation)
+
+    #*** Relation 4
+    r4 = Table(1000,2)
+    r4.setName("Relation4")
+    r4.relation.fill(1)
+    for row in range(0,r4.numRows):
+        np.put(r4.relation, row*r4.numCols, row+1)
+    database.addRelation(r4)
+    print(r4.relation)
 
     #*** loads test relation
     index=0
     num_cols=3
     m=20
-    cols = ["first","last","address"]
+    cols = ["first","last","age"]
     table = Table(m,num_cols+1)
     table.setName("customers")
     table.relation.fill(0)
@@ -684,6 +669,7 @@ def load_relations():
     columns = get_columns(table,num_cols)
     np.put(table.relation,29,"jane")
     np.put(table.relation,30,"doe")
+    np.put(table.relation,31,"3")
     np.put(table.relation,33,"greg")
     np.put(table.relation,34,"wills")
     np.put(table.relation,37,"donald")

@@ -13,7 +13,7 @@ def main():
         cmd = raw_input(prompt)
         cmd_list.append(cmd)
         database,tokens = parse_expression(cmd,database)
-    # restore state somehow
+    save_state(database)
 
 
 
