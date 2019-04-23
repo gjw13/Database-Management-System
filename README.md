@@ -5,13 +5,13 @@
 
 TO DO LIST (4/19)
   1. Finish eval_delete()
-  2. Incorporate table class into existing evaluator and parser (mostly done)
+  2. ~~Incorporate table class into existing evaluator and parser (mostly done)~~
   3. Look into incorporating < and >
   4. Get indexes to work
   5. Relational schema
-      a. Create a way to keep track of tables (list of tables)
+      a. ~~Create a way to keep track of tables (list of tables)~~
       b. Parser accounts for aliases
-      c. Right a join algorithm (probably merge-scan) but could be nested
+      c. Write a join algorithm (probably merge-scan) but could be nested
 
 Parser TODO:
   1. Tokenize the input

@@ -459,11 +459,10 @@ def eval_create_index(database,index_name, table_name, col_list):
 
 def eval_drop_table(database,table_name):
     table_exists = False
-    for relation in database.relationList:
-        if relation.name == table_name.upper():
-            table_exists = True
-            database.relationList.remove(relation)
-    if table_exists:
+    if database.tableExists(table_name):
+        for relation in database.relationList:
+            if relation.name == table_name.upper():
+                database.relationList.remove(relation)
         print(table_name.upper() + " successfully deleted.")
         return database
     else:
