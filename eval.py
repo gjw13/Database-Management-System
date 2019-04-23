@@ -470,18 +470,32 @@ def eval_drop_table(database,table_name):
         return database
 
 def eval_drop_index(database,index_name, table_ref):
-
-    tempTable = Table(10,10) # TODO: grab the correct table using table_ref
-
-    for tuple in tempTable.indicies:
-        if tuple[0] == index_name:
-            tempTable.indices.remove(tuple)
-
-    return tempTable
+    if database.tableExists(table_ref):
+        for relation in database.relationList:
+            if relation.name == table_ref.upper():
+                for tuple in relation.indices:
+                    if tuple[0] == index_name:
+                        relation.indices.remove(tuple)
+                        print("Index succesfully deleted.")
+                        return database
+    print("Could not find index with name " + index_name)
+    return database
 
 def merge_scan(table1, table2, joining_attr):
     # Sort each table on the joining attr
+    sorted_t1 = np.sort(table1.relation, axis = table1.colNames.index(joining_attr))
+    sorted_t2 = np.sort(table2.relation, axis = table2.colNames.index(joining_attr))
     # Match the rows based on the joining attr
+    size_check = sorted_t1.numRows > sorted_t2.numRows
+    if size_check:
+        result_table = Table(sorted_t2.numRows, sorted_t1.numCols + sorted_t2.numCols - 1)
+    else:
+        result_table = Table(sorted_t1.numRows, sorted_t1.numCols + sorted_t2.numCols - 1)
+        i = 0
+        while i < sorted_t1.numRows:
+            j = 0
+            while j < sorted_t1.numCols:
+
     # Create one large table with all the new rows
     return 0
 
