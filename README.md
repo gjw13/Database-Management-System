@@ -9,9 +9,9 @@ TO DO LIST (4/19)
   3. ~~Look into incorporating < and >~~
   4. Get indexes to work
   5. Relational schema
-      a. ~~Create a way to keep track of tables (list of tables)~~
-      b. Parser accounts for aliases
-      c. Write a join algorithm (probably merge-scan) but could be nested
+      1. ~~Create a way to keep track of tables (list of tables)~~
+      2. Parser accounts for aliases
+      3. ~~Write a join algorithm (probably merge-scan) but could be nested~~
 
 Parser TODO:
   1. Tokenize the input

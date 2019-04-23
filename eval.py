@@ -22,16 +22,11 @@ def eval_select(database, cols, tables, conditions):
         print("there are multiple tables to select from")
     table = database.getRelation(tables[0])
     columns = table.getColNames()
-<<<<<<< HEAD
     for cond in conditions:
         if cond != "and" and cond != "or":
             if not table.columnExists(cond[0]):
                 print("Column name \'" + str(cond[0]) + "\' did not match existing column in relation. ")
                 return 0
-=======
-    # print(table.relation)
-
->>>>>>> e373039e6e01121668932957f7fa4d19507c6cf5
     if cols[0] != "*":
         index_of_cols = []
         col_index=0
