@@ -2,6 +2,8 @@
 # helpers
 from __future__ import print_function
 import numpy as np
+from table import *
+from database import *
 
 
 def eval_select(cols, tables, conditions):
@@ -68,7 +70,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         if conditions[condition_num][1] == "=":
             for x in range(1,num_rows):
                 # print(np.take(table,x*num_cols+col_index+1))
-                list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+                list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
             # print(list_of_vals)
             for val in range(0,len(list_of_vals)):
                 if list_of_vals[val][1] == the_value:
@@ -97,13 +99,12 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
                     for g in intersection_list:
                         for x in range(0,len(index_of_cols)):
                             testing[x]= g*num_cols+index_of_cols[x]
-                        # result.append(np.take(table,testing))
-                        test = np.take(table,testing)
+                        test = np.take(table.relation,testing)
                         print_output(test)
         elif conditions[condition_num][1] == "!=":
             # print("in the correct if else")
             for x in range(1,num_rows):
-                list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+                list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
             for val in range(0,len(list_of_vals)):
                 if list_of_vals[val][1] != the_value:
                     row_nums_matched.append(list_of_vals[val][0])
@@ -129,7 +130,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
                         for x in range(0,len(index_of_cols)):
                             testing[x]= g*num_cols+index_of_cols[x]
                         # result.append(np.take(table,testing))
-                        test = np.take(table,testing)
+                        test = np.take(table.relation,testing)
                         print_output(test)
         condition_num += 2
 
@@ -147,7 +148,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
     row_nums_matched = []
     if conditions[0][1] == "=":
         for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
         # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
             if list_of_vals[val][1] == first_val:
@@ -161,11 +162,11 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
             for g in row_nums_matched:
                 for x in range(0,len(index_of_cols)):
                     testing[x]= g*num_cols+index_of_cols[x]
-                test = np.take(table,testing)
+                test = np.take(table.relation,testing)
                 print_output(test)
     elif conditions[0][1] == "!=":
         for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table,x*num_cols+col_index+1)))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
         # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
             if list_of_vals[val][1] != first_val:
@@ -181,7 +182,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
                 for x in range(0,len(index_of_cols)):
                     testing[x]= g*num_cols+index_of_cols[x]
 
-                test = np.take(table,testing)
+                test = np.take(table.relation,testing)
                 print_output(test)
 
 # handles a simple select statement without conditions
@@ -237,11 +238,11 @@ def eval_insert(table_name,values):
                 index_of_cols.append(test_index+1)
             col_index+=1
 
-    table.resize((num_rows+1,num_cols))
+    table.relation.resize((num_rows+1,num_cols))
     row_num = num_rows
-    np.put(table,row_num*num_cols,row_num)
+    np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(vals)):
-        np.put(table,row_num*num_cols+index_of_cols[x],vals[x])
+        np.put(table.relation,row_num*num_cols+index_of_cols[x],vals[x])
     print(table)
     return table
 
@@ -296,7 +297,7 @@ def eval_update(table_name,col_vals,conditions):
     intersection_list = []
     for l in range(0,num_conditions):
         for x in range(1,num_rows):
-            list_of_vals.append((x,np.take(table,x*num_cols+index_of_cols2[l]))) # TODO: index error here
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+index_of_cols2[l]))) # TODO: index error here
         for val in range(0,len(list_of_vals)):
             if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == search_vals[l]:
@@ -327,7 +328,7 @@ def eval_update(table_name,col_vals,conditions):
                 for g in intersection_list:
                     for x in range(0,len(index_of_cols1)):
                         testing[x]= g*num_cols+index_of_cols1[x]
-                        np.put(table,g*num_cols+index_of_cols1[x],vals[x])
+                        np.put(table.relation,g*num_cols+index_of_cols1[x],vals[x])
 
         condition_num+=2
 
@@ -338,12 +339,15 @@ def eval_create_table(table_name,cols):
     m=20 # number of rows
     index=0
     num_cols = len(cols)+1
-    dtype = np.dtype([('key', int), ('first', 'S10'), ('last', 'S10'), ('address','S10')])
-    table = np.chararray((m,num_cols),itemsize=20)
-    table.fill(0)
-    np.put(table, index, "key")
+    # dtype = np.dtype([('key', int), ('first', 'S10'), ('last', 'S10'), ('address','S10')])
+    # table = np.chararray((m,num_cols),itemsize=20)
+    table = Table(m,4)
+    table.setName(table_name)
+    table.relation.fill(0)
+    np.put(table.relation, index, "key")
+    # print(table.relation)
     for x in range(0,num_cols-1):
-        np.put(table, x+1,cols[x])
+        np.put(table.relation, x+1,cols[x])
 
     # loop to populate columns of our test db
     for i in range(1,m):
@@ -351,23 +355,23 @@ def eval_create_table(table_name,cols):
         index += num_cols
     # print(table)
     columns = get_columns(table,num_cols)
-    np.put(table,29,"jane")
-    np.put(table,30,"doe")
-    np.put(table,33,"greg")
-    np.put(table,34,"wills")
-    np.put(table,37,"donald")
-    np.put(table,38,"trump")
-    print(table)
+    np.put(table.relation,29,"jane")
+    np.put(table.relation,30,"doe")
+    np.put(table.relation,33,"greg")
+    np.put(table.relation,34,"wills")
+    np.put(table.relation,37,"donald")
+    np.put(table.relation,38,"trump")
+    print(table.relation)
     print("\n")
-    test_sort(table)
+    # test_sort(table)
 
     return table, num_cols, m
 
 def create_test_db(table,index,num_cols,row_num):
-    np.put(table, row_num*num_cols, row_num)
-    np.put(table, row_num*num_cols+1,"john")
-    np.put(table, row_num*num_cols+2,"smith")
-    np.put(table, row_num*num_cols+3,"3700 O St. NW")
+    np.put(table.relation, row_num*num_cols, row_num)
+    np.put(table.relation, row_num*num_cols+1,"john")
+    np.put(table.relation, row_num*num_cols+2,"smith")
+    np.put(table.relation, row_num*num_cols+3,"3700 O St. NW")
 
     return table
 
@@ -376,7 +380,7 @@ def get_columns(table,num_cols):
     index_of_cols = []
     for x in range(1,num_cols):
         index_of_cols.append(x)
-    columns = np.take(table,index_of_cols)
+    columns = np.take(table.relation,index_of_cols)
     return columns
 
 def eval_delete(table_name, conditions):
@@ -411,8 +415,7 @@ def eval_delete(table_name, conditions):
         for x in range(1,num_rows):
             # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
             # print("Test: "+ str(np.take(table,num_cols*x+index_of_cols2[itr])))
-            if val == np.take(table,num_cols*x+index_of_cols[itr]):
-
+            if val == np.take(table.relation,num_cols*x+index_of_cols[itr]):
                 itr+=1
                 break
 
@@ -455,8 +458,56 @@ def eval_drop_index(index_name, table_ref):
 
     return tempTable
 
+# def print_relation(table):
+#     index_list = []
+#     for x in range(0,table.numRows):
+#         index_list.extend(range(x*table.numCols, table.numCols*))
+#         row = np.take(table.relation,index_list)
+#         print_output(row)
+
+def load_relations():
+    # this works alright but waiting to talk with you about exactly what he wants
+    database = Database()
+    r1 = Table(100,100)
+    database.addRelation(r1)
+    r1.setName("Relation 1")
+
+    for row in range(0,r1.numRows):
+        for col in range(0,r1.numCols):
+            np.put(r1.relation,row*r1.numCols+col,(col+1)*(row+1))
+    # print(r1.relation)
+
+    # this might be what we're looking for 5 rows and cols for visibility
+    test = Table(5,5)
+    database.addRelation(test)
+    for row in range(0,test.numRows):
+        for col in range(0,test.numCols):
+            np.put(test.relation,row*test.numCols+col,row)
+    print(test.relation)
+
+
+    r2 = Table(20,20)
+    database.addRelation(r2)
+    r2.setName("Relation 2")
+    for row in range(0,r2.numRows):
+        for col in range(0,r2.numCols):
+            np.put(r2.relation,row*r2.numCols+col,(col+1)*(row+1))
+    # print(r2.relation)
+    # print_relation(r2)
+
+    r3 = Table(40,40)
+    database.addRelation(r3)
+    r3.setName("Relation 3")
+    r3.relation.fill(1)
+    for i in range(0,r3.numCols):
+        np.put(r3.relation, i*r3.numCols, i)
+    np.put(r3.relation,0,1)
+    # print(r3.relation)
+    return database
+
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
-eval_create_table("customers",("first","last","address"))
+# eval_create_table("customers",("first","last","address"))
 # table = eval_insert("customers",[("first","last"),"values",("adam","jones","arizona")])
 # table = eval_update("customers",("first","=","hodor"),("last","=","doe"))
 # eval_delete("customers",[("first","=","john")])
+database = load_relations()
