@@ -3,7 +3,10 @@
 from __future__ import print_function
 import numpy as np
 from table import *
+<<<<<<< HEAD
+=======
 from database import *
+>>>>>>> 8c5ebb5f578045e86861d66ce87060076e3f31c1
 
 
 def eval_select(cols, tables, conditions):
@@ -445,7 +448,7 @@ def eval_create_index(index_name, table_name, col_list):
     return tempTable
 
 def eval_drop_table(table_name):
-
+    # TODO
     return True
 
 def eval_drop_index(index_name, table_ref):
@@ -458,6 +461,16 @@ def eval_drop_index(index_name, table_ref):
 
     return tempTable
 
+<<<<<<< HEAD
+
+
+
+def merge_scan(table1, table2, joining_attr):
+    # Sort each table on the joining attr
+    # Match the rows based on the joining attr
+    # Create one large table with all the new rows
+    return 0
+=======
 # def print_relation(table):
 #     index_list = []
 #     for x in range(0,table.numRows):
@@ -504,6 +517,7 @@ def load_relations():
     np.put(r3.relation,0,1)
     # print(r3.relation)
     return database
+>>>>>>> 8c5ebb5f578045e86861d66ce87060076e3f31c1
 
 # eval_select(("first","last"),"customers",[("first","=","John"),("last","=","smith")])
 # eval_create_table("customers",("first","last","address"))
