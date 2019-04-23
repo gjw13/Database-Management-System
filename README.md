@@ -7,7 +7,10 @@ TO DO LIST (4/19)
   1. Finish eval_delete()
   2. ~~Incorporate table class into existing evaluator and parser (mostly done)~~
   3. Look into incorporating < and >
-  4. Get indexes to work
+  4. Get indexes to work --> basically check the values of the indexed col first
+      1. eval_select
+      3. eval_delete
+      4. eval_update  
   5. Relational schema
       a. ~~Create a way to keep track of tables (list of tables)~~
       b. Parser accounts for aliases
