@@ -33,7 +33,8 @@ to pass to the evaluator/back end of our system.
 
 #### Features
   1. Create table
-  Example: > CREATE TABLE CUSTOMERS (first string, last string, position string, age age);
+  - Example
+    - > CREATE TABLE CUSTOMERS (first string, last string, position string, age age);
   2. Drop table
   3. Create index
   * Single attribute index
