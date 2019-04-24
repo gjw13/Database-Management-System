@@ -28,15 +28,18 @@ Parser TODO:
 # Database Management System
 Greg Wills and David Wilke
 
+Our system uses a similar grammar to SQL. Check it out [here](https://forcedotcom.github.io/phoenix/).
+
 ## How to run
 > python main.py
 
 ### Files
-* main.py - this is the driver of the system
-* parser.py - contains the majority of the parsing of the queries
-* eval.py - contains the back end of the system, receives input from parser.py and makes appropriate executions
-* table.py - contains the table class
-* database.py - contains the database class
+* **main.py** - this is the driver of the system
+* **parser.py** - contains the majority of the parsing of the queries
+* **eval.py** - contains the back end of the system, receives input from parser.py and makes appropriate executions
+* **table.py** - contains the table class
+* **database.py** - contains the database class
+* **Storage/** - directory that contains the stored relations in separate files
 
 ## Query Input Manager
 
