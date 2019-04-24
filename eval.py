@@ -8,6 +8,7 @@ import pickle
 import os
 from os import listdir
 from os.path import isfile, join
+import copy
 
 
 
@@ -304,6 +305,7 @@ def restore_state():
             database.relationList.append(relation)
     return database
 
+# TODO: Check if all the values are the same as another tuple
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
@@ -317,15 +319,33 @@ def eval_insert(database,table_name,values):
     while i < num_cols:
         index_of_cols.append(i)
         i+=1
+<<<<<<< HEAD
     print(table.relation)
     table.relation = np.resize(table.relation,(num_rows+1,num_cols))
     print(table.relation)
+=======
+
+    temp_list = table.relation.tolist()
+    for tuple in temp_list:
+        if sorted(tuple) == sorted(values):
+            print("Duplicate Tuple! Not allowed.")
+            return database
+
+    copy_table = copy.deepcopy(table)
+    copy_table.relation.resize((num_rows+1,num_cols))
+>>>>>>> 6c9d1b051b8ea048dd6deac06c74441bf4d673f6
     table.setNumRows(num_rows+1)
     row_num = num_rows
-    np.put(table.relation,row_num*num_cols,row_num)
+    #np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(values)):
+<<<<<<< HEAD
         np.put(table.relation,row_num*num_cols+index_of_cols[x],values[x])
     #print(table.relation)
+=======
+        np.put(copy_table.relation,row_num*num_cols+index_of_cols[x],values[x])
+    table.relation = copy_table.relation
+    print("Successful insert.")
+>>>>>>> 6c9d1b051b8ea048dd6deac06c74441bf4d673f6
     return database
 
 
