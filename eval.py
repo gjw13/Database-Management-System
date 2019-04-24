@@ -45,10 +45,11 @@ def eval_select(database, cols, tables, conditions):
         else:
             print("Relation \'" + table_name.upper() + "\' does not exist.")
             return 0
-    for col in cols:
-        if col not in table_obj.getColNames():
-            print("One or more of your columns does not exist.")
-            return 0
+    # commented this out cuz could some problems with two relations 
+    # for col in cols:
+    #     if col not in table_obj.getColNames():
+    #         print("One or more of your columns does not exist.")
+    #         return 0
 
     if len(tables) == 1:
         if database.tableExists(tables[0]):
@@ -58,7 +59,7 @@ def eval_select(database, cols, tables, conditions):
             return 0
     else:
         # join
-        
+
         print("There are multiple tables to select from")
     table = database.getRelation(tables[0])
     columns = table.getColNames()

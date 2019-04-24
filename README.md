@@ -26,10 +26,17 @@ Parser TODO:
 *Start of documentation*
 
 # Database Management System
+Greg Wills and David Wilke
 
 ## How to run
+> python main.py
 
 ### Files
+* main.py - this is the driver of the system
+* parser.py - contains the majority of the parsing of the queries
+* eval.py - contains the back end of the system, receives input from parser.py and makes appropriate executions
+* table.py - contains the table class
+* database.py - contains the database class
 
 ## Query Input Manager
 
