@@ -26,7 +26,7 @@ class Table:
         for x in range(0,self.numCols):
             index_of_cols.append(x)
         columns = np.take(self.relation,index_of_cols)
-        self.colNames = columns[:]
+        self.colNames = columns[:].tolist()
         return columns
 
     def columnExists(self,col_name):

@@ -9,6 +9,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 import copy
+from collections import OrderedDict
 
 
 
@@ -50,10 +51,38 @@ def eval_select(database, cols, tables, conditions):
             print("Table does not exist.")
             return 0
     else:
+        # Get the joining attrs from the where clause
+        dot_index = -1
+        for tuple_t in conditions:
+            if "." in tuple_t[0]:
+                dot_index = conditions.index(tuple_t)
+        joining_cond = conditions[dot_index]
+        conditions.remove(joining_cond)
+
         # join
+        i = 0
+        table = Table(1,1)
+        while i < len(tables)-1: # ASSUMPTION: Tables have aliases
+            t1_name = tables[i][0]
+            t1_alias = tables[i][1]
+            join_index = [j for j, s in enumerate(joining_cond) if t1_alias in s]
+            temp_attr = joining_cond[join_index[0]]
+            t1_join_attr_temp = temp_attr.replace(".", "")
+            t1_join_attr = t1_join_attr_temp.replace(t1_alias, "")
+
+            t2_name = tables[i+1][0]
+            t2_alias = tables[i+1][1]
+            join_index = [k for k, s in enumerate(joining_cond) if t2_alias in s]
+            temp_attr = joining_cond[join_index[0]]
+            t2_join_attr_temp = temp_attr.replace(".", "")
+            t2_join_attr = t2_join_attr_temp.replace(t2_alias, "")
+
+            table = merge_scan(database.getRelation(t1_name), database.getRelation(t2_name), t1_join_attr, t2_join_attr)
+            #print(table.relation)
+            i+=1
         # table = database.getRelation("CUSTOMERS")
-        print("there are multiple tables to select from")
-    table = database.getRelation(tables[0])
+        #print("there are multiple tables to select from")
+    #table = database.getRelation(tables[0])
     columns = table.getColNames()
     for cond in conditions:
         if cond != "and" and cond != "or":
@@ -622,125 +651,77 @@ def list_sort(list, index):
     return list
 
 
-def merge_scan(table1, table2, joining_attr):
-    # TESTING
-    # joining_attr = "col1"
-    # table1 = Table(6,5)
-    # list1 = ["col1", "col2", "col3", "col4", "col5", "col6"]
-    # table1.setColNames(list1)
-    # np.put(table1.relation,0,"44")
-    # np.put(table1.relation,1,"2")
-    # np.put(table1.relation,2,"3")
-    # np.put(table1.relation,3,"4")
-    # np.put(table1.relation,4,"5")
-    # np.put(table1.relation,5,"9")
-    # np.put(table1.relation,6,"2")
-    # np.put(table1.relation,7,"3")
-    # np.put(table1.relation,8,"4")
-    # np.put(table1.relation,9,"5")
-    # np.put(table1.relation,10,"8")
-    # np.put(table1.relation,11,"2")
-    # np.put(table1.relation,12,"3")
-    # np.put(table1.relation,13,"4")
-    # np.put(table1.relation,14,"5")
-    # np.put(table1.relation,15,"7")
-    # np.put(table1.relation,16,"2")
-    # np.put(table1.relation,17,"3")
-    # np.put(table1.relation,18,"4")
-    # np.put(table1.relation,19,"5")
-    # np.put(table1.relation,20,"6")
-    # np.put(table1.relation,21,"2")
-    # np.put(table1.relation,22,"3")
-    # np.put(table1.relation,23,"4")
-    # np.put(table1.relation,24,"5")
-    # np.put(table1.relation,25,"5")
-    # np.put(table1.relation,26,"2")
-    # np.put(table1.relation,27,"3")
-    # np.put(table1.relation,28,"4")
-    # np.put(table1.relation,29,"5")
-    # table2 = Table(5,5)
-    # np.put(table2.relation,0,"44")
-    # np.put(table2.relation,1,"12")
-    # np.put(table2.relation,2,"13")
-    # np.put(table2.relation,3,"14")
-    # np.put(table2.relation,4,"15")
-    # np.put(table2.relation,5,"9")
-    # np.put(table2.relation,6,"12")
-    # np.put(table2.relation,7,"13")
-    # np.put(table2.relation,8,"14")
-    # np.put(table2.relation,9,"15")
-    # np.put(table2.relation,10,"8")
-    # np.put(table2.relation,11,"12")
-    # np.put(table2.relation,12,"13")
-    # np.put(table2.relation,13,"14")
-    # np.put(table2.relation,14,"15")
-    # np.put(table2.relation,15,"7")
-    # np.put(table2.relation,16,"12")
-    # np.put(table2.relation,17,"13")
-    # np.put(table2.relation,18,"14")
-    # np.put(table2.relation,19,"15")
-    # np.put(table2.relation,20,"6")
-    # np.put(table2.relation,21,"12")
-    # np.put(table2.relation,22,"13")
-    # np.put(table2.relation,23,"14")
-    # np.put(table2.relation,24,"15")
-    # table2.setColNames(["col1", "col7", "col6", "col8", "col9"])
+def merge_scan(table1, table2, joining_attr_t1, joining_attr_t2):
 
     # Check if the joining_attr is a number
     # Sort each table on the joining attr
     try:
-        int_val = int(table1.relation[0,table1.colNames.index(joining_attr)])
+        int_val = int(table1.relation[1,table1.colNames.index(joining_attr_t1)])
         temp_t1 = table1.relation.tolist()
         for line in temp_t1:
-            line[table1.colNames.index(joining_attr)] = int(line[table1.colNames.index(joining_attr)])
+            if temp_t1.index(line) != 0:
+                line[table1.colNames.index(joining_attr_t1)] = int(line[table1.colNames.index(joining_attr_t1)])
         temp_t2 = table2.relation.tolist()
         for line in temp_t2:
-            line[table2.colNames.index(joining_attr)] = int(line[table2.colNames.index(joining_attr)])
-        sorted_t1 = list_sort(temp_t1, table1.colNames.index(joining_attr))
-        sorted_t2 = list_sort(temp_t2, table2.colNames.index(joining_attr))
+            if temp_t2.index(line) != 0:
+                line[table2.colNames.index(joining_attr_t2)] = int(line[table2.colNames.index(joining_attr_t2)])
+        sorted_t1 = list_sort(temp_t1, table1.colNames.index(joining_attr_t1))
+        sorted_t2 = list_sort(temp_t2, table2.colNames.index(joining_attr_t2))
     except:
-        sorted_t1 = list_sort(table1.relation.tolist(), table1.colNames.index(joining_attr))
-        sorted_t2 = list_sort(table2.relation.tolist(), table2.colNames.index(joining_attr))
+        sorted_t1 = list_sort(table1.relation.tolist(), table1.colNames.index(joining_attr_t1))
+        sorted_t2 = list_sort(table2.relation.tolist(), table2.colNames.index(joining_attr_t2))
+
+    #print(sorted_t1)
 
     # Match the rows based on the joining attr
     size_check = len(sorted_t1) > len(sorted_t2)
     if size_check:
         result_table = Table(len(sorted_t2), len(sorted_t1[0]) + len(sorted_t2[0]) - 1)
-        result_table.setColNames(table2.getColNames())
-        result_table.setColNames(table1.getColNames())
-        tempColNames = list(dict.fromkeys(result_table.getColNames()))
+        result_table.setColNames(table2.colNames)
+        result_table.setColNames(table1.colNames)
+        tempColNames = list(OrderedDict.fromkeys(result_table.colNames))
         result_table.colNames = []
         result_table.setColNames(tempColNames)
+        z = 0
+        while z < result_table.numCols:
+            result_table.relation[0,z] = result_table.colNames[z]
+            z+=1
+
         i = 0
-        while i < len(sorted_t2): # Rows
+        while i < len(sorted_t2)-1: # Rows
             j = 0
             while j < len(sorted_t2[0]): # Cols
-                result_table.relation[i,j] = sorted_t2[i][j]
+                result_table.relation[i+1,j] = sorted_t2[i][j]
                 j+=1
             k = 0
             while k < len(sorted_t1[0]): # Cols
-                if k != table1.colNames.index(joining_attr):
-                    result_table.relation[i,k+j-1] = sorted_t1[i][k]
+                if k != table1.colNames.index(joining_attr_t1):
+                    result_table.relation[i+1,k+j-1] = sorted_t1[i][k]
                 k+=1
             i+=1
         return result_table
     else:
         result_table = Table(len(sorted_t1), len(sorted_t1[0]) + len(sorted_t2[0]) - 1)
-        result_table.setColNames(table1.getColNames())
-        result_table.setColNames(table2.getColNames())
-        tempColNames = list(dict.fromkeys(result_table.getColNames()))
+        result_table.setColNames(table1.colNames)
+        result_table.setColNames(table2.colNames)
+        tempColNames = list(OrderedDict.fromkeys(result_table.colNames))
         result_table.colNames = []
         result_table.setColNames(tempColNames)
+        z = 0
+        while z < result_table.numCols:
+            result_table.relation[0,z] = result_table.colNames[z]
+            z+=1
+
         i = 0
-        while i < len(sorted_t1): # Rows
+        while i < len(sorted_t1)-1: # Rows
             j = 0
             while j < len(sorted_t1[0]): # Cols
-                result_table.relation[i,j] = sorted_t1[i][j]
+                result_table.relation[i+1,j] = sorted_t1[i][j]
                 j+=1
             k = 0
             while k < len(sorted_t2[0]): # Cols
-                if k != table2.colNames.index(joining_attr):
-                    result_table.relation[i,k+j-1] = sorted_t2[i][k]
+                if k != table2.colNames.index(joining_attr_t2):
+                    result_table.relation[i+1,k+j-1] = sorted_t2[i][k]
                 k+=1
             i+=1
         return result_table
@@ -750,38 +731,58 @@ def load_relations():
     database = Database()
 
     #*** Relation 1
-    r1 = Table(100,2)
+    r1 = Table(101,2)
     r1.setName("Relation1")
-    for row in range(0,r1.numRows):
+    r1.setColNames(["col1", "col2"])
+
+    np.put(r1.relation, 0, "col1")
+    np.put(r1.relation, 1, "col2")
+
+    for row in range(1,r1.numRows):
         for col in range(0,r1.numCols):
-            np.put(r1.relation,row*r1.numCols+col,row+1)
+            np.put(r1.relation,row*r1.numCols+col,row)
     database.addRelation(r1)
     print(r1.relation)
 
     #*** Relation 2
-    r2 = Table(1000,2)
+    r2 = Table(1001,2)
     r2.setName("Relation2")
-    for row in range(0,r2.numRows):
+
+    np.put(r2.relation, 0, "col1")
+    np.put(r2.relation, 1, "col3")
+    r2.setColNames(["col1", "col3"])
+
+    for row in range(1,r2.numRows):
         for col in range(0,r2.numCols):
-            np.put(r2.relation,row*r2.numCols+col,row+1)
+            np.put(r2.relation,row*r2.numCols+col,row)
     database.addRelation(r2)
     # print(r2.relation)
 
     #*** Relation 3
-    r3 = Table(100,2)
+    r3 = Table(101,2)
     r3.setName("Relation3")
+
+    np.put(r3.relation, 0, "col1")
+    np.put(r3.relation, 1, "col4")
+    r3.setColNames(["col1", "col4"])
+
     r3.relation.fill(1)
-    for row in range(0,r3.numRows):
-        np.put(r3.relation, row*r3.numCols, row+1)
+    for row in range(1,r3.numRows):
+        np.put(r3.relation, row*r3.numCols, row)
     database.addRelation(r3)
     # print(r3.relation)
 
     #*** Relation 4
-    r4 = Table(1000,2)
+    r4 = Table(1001,2)
     r4.setName("Relation4")
+
+    np.put(r4.relation, 0, "col1")
+    np.put(r4.relation, 1, "col5")
+    r4.setColNames(["col1", "col5"])
+
     r4.relation.fill(1)
-    for row in range(0,r4.numRows):
-        np.put(r4.relation, row*r4.numCols, row+1)
+    for row in range(1,r4.numRows):
+        np.put(r4.relation, row*r4.numCols, row)
     database.addRelation(r4)
     # print(r4.relation)
 
