@@ -8,6 +8,7 @@ import pickle
 import os
 from os import listdir
 from os.path import isfile, join
+import copy
 
 
 
@@ -289,7 +290,7 @@ def save_state(database):
         # relation.relation.dump(file)
 
 def restore_state():
-    # database = Database()
+    database = Database()
     relationList = []
     dir = "Storage"
     # table = np.load(file)
@@ -301,8 +302,8 @@ def restore_state():
         file = os.path.join(mypath,file)
         with open(file, 'rb') as input:
             relation = pickle.load(input)
-            relationList.append(relation)
-    return relationList
+            database.relationList.append(relation)
+    return database
 
 # TODO: Check if all the values are the same as another tuple
 def eval_insert(database,table_name,values):
@@ -325,12 +326,14 @@ def eval_insert(database,table_name,values):
             print("Duplicate Tuple! Not allowed.")
             return database
 
-    table.relation.resize((num_rows+1,num_cols))
+    copy_table = copy.deepcopy(table)
+    copy_table.relation.resize((num_rows+1,num_cols))
     table.setNumRows(num_rows+1)
     row_num = num_rows
-    np.put(table.relation,row_num*num_cols,row_num)
+    #np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(values)):
-        np.put(table.relation,row_num*num_cols+index_of_cols[x],values[x])
+        np.put(copy_table.relation,row_num*num_cols+index_of_cols[x],values[x])
+    table.relation = copy_table.relation
     print("Successful insert.")
     return database
 
