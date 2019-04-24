@@ -42,7 +42,7 @@ to pass to the evaluator/back end of our system.
   - Examples
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
-  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named "Storage" which is detailed below.
+  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named *Storage*, whose functionality is detailed below.
   3. Create index
   - Examples
     - > CREATE INDEX index_name on CUSTOMERS (age);
@@ -56,14 +56,22 @@ to pass to the evaluator/back end of our system.
 
 ### Operators
   1. SELECT
-  * Parse components
-    * Assumption: If there is more than one table in the select statement, there will be aliases.
-    * Assumption: The WHERE clause is the last thing in a query if it exists.
-  * Validate table selection
-  * Project attributes for all identified tables
-  * Execute query
+  - Parse components
+    - Assumption: If there is more than one table in the select statement, there will be aliases.
+    - Assumption: The WHERE clause is the last thing in a query if it exists.
+  - Validate table selection
+  ```
+  if database.tableExists(table_name):
+    table_obj = database.getRelation(table_name)
+  ```
+  - Project attributes for all identified tables
+  - Execute query
   2. INSERT
-  * Assumption: only full tuples can be inserted into the relation.
+  - Examples
+    - > INSERT INTO CUSTOMERS VALUES (20, Ophir, Frieder, 29);
+    - > INSERT INTO EQUIPMENT VALUES (5, crane, 2017, 2018);
+  - **Note**: Key can be a duplicate so be
+  - Assumption: only full tuples can be inserted into the relation.
   3. UPDATE
   4. DELETE
 

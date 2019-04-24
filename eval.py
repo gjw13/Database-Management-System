@@ -643,7 +643,8 @@ def eval_drop_table(database,table_name):
             if relation.name == table_name.upper():
                 database.relationList.remove(relation)
                 file = os.path.join(cwd,dir,table_name.upper())
-                os.remove(file)
+                if(os.path.isfile(file)):
+                    os.remove(file)
         print(table_name.upper() + " successfully deleted.")
         return database
     else:
