@@ -4,6 +4,10 @@ from __future__ import print_function
 import numpy as np
 from table import *
 from database import *
+import pickle
+import os
+from os import listdir
+from os.path import isfile, join
 
 
 
@@ -206,19 +210,32 @@ def print_output(result):
     # print("------------------------------")
 
 def save_state(database):
-    file = "outfile"
+    # file = "outfile"
+    dir = "Storage"
     # database.getRelation("CUSTOMERS").relation.tofile(file,sep="")
-    database.getRelation("CUSTOMERS").relation.dump(file)
-    # np.save(file,table)
+    for relation in database.relationList:
+        filename = str(relation.name)
+        cwd = os.getcwd()
+        file = os.path.join(cwd,dir,filename)
+        with open(file, 'wb') as output:
+            pickle.dump(relation, output, pickle.HIGHEST_PROTOCOL)
+        # relation.relation.dump(file)
 
 def restore_state():
-    file = "outfile"
-    # table.fromfile(file,sep=",",format="%s")
-    table = np.load(file)
-    # this isn't working but simple writing to text file is just as easy
-    # could also just store commands in text file and rerun them
-
-    # return table
+    # database = Database()
+    relationList = []
+    dir = "Storage"
+    # table = np.load(file)
+    cwd = os.getcwd()
+    mypath = os.path.join(cwd,dir)
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    print(onlyfiles)
+    for file in onlyfiles:
+        file = os.path.join(mypath,file)
+        with open(file, 'rb') as input:
+            relation = pickle.load(input)
+            relationList.append(relation)
+    return relationList
 
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
@@ -619,7 +636,7 @@ def load_relations():
         for col in range(0,r1.numCols):
             np.put(r1.relation,row*r1.numCols+col,row+1)
     database.addRelation(r1)
-    print(r1.relation)
+    # print(r1.relation)
 
     #*** Relation 2
     r2 = Table(1000,2)
@@ -628,7 +645,7 @@ def load_relations():
         for col in range(0,r2.numCols):
             np.put(r2.relation,row*r2.numCols+col,row+1)
     database.addRelation(r2)
-    print(r2.relation)
+    # print(r2.relation)
 
     #*** Relation 3
     r3 = Table(100,2)
@@ -637,7 +654,7 @@ def load_relations():
     for row in range(0,r3.numRows):
         np.put(r3.relation, row*r3.numCols, row+1)
     database.addRelation(r3)
-    print(r3.relation)
+    # print(r3.relation)
 
     #*** Relation 4
     r4 = Table(1000,2)
@@ -646,7 +663,7 @@ def load_relations():
     for row in range(0,r4.numRows):
         np.put(r4.relation, row*r4.numCols, row+1)
     database.addRelation(r4)
-    print(r4.relation)
+    # print(r4.relation)
 
     #*** loads test relation
     index=0
@@ -674,7 +691,7 @@ def load_relations():
     np.put(table.relation,34,"wills")
     np.put(table.relation,37,"donald")
     np.put(table.relation,38,"trump")
-    print(table.relation)
+    # print(table.relation)
     print("\n")
 
     database.addRelation(table)
