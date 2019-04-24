@@ -4,11 +4,7 @@ from database import *
 
 def main():
     # Set up the table list - TODO: needs to be able to be accessed from eval (protected var?)
-<<<<<<< HEAD
-    database = load_relations()
-=======
     #database = load_relations()
->>>>>>> 6c9d1b051b8ea048dd6deac06c74441bf4d673f6
     database = restore_state()
     # for relation in relationList:
     #     if relation in database.relationList:

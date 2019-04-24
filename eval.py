@@ -319,11 +319,6 @@ def eval_insert(database,table_name,values):
     while i < num_cols:
         index_of_cols.append(i)
         i+=1
-<<<<<<< HEAD
-    print(table.relation)
-    table.relation = np.resize(table.relation,(num_rows+1,num_cols))
-    print(table.relation)
-=======
 
     temp_list = table.relation.tolist()
     for tuple in temp_list:
@@ -333,19 +328,13 @@ def eval_insert(database,table_name,values):
 
     copy_table = copy.deepcopy(table)
     copy_table.relation.resize((num_rows+1,num_cols))
->>>>>>> 6c9d1b051b8ea048dd6deac06c74441bf4d673f6
     table.setNumRows(num_rows+1)
     row_num = num_rows
     #np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(values)):
-<<<<<<< HEAD
-        np.put(table.relation,row_num*num_cols+index_of_cols[x],values[x])
-    #print(table.relation)
-=======
         np.put(copy_table.relation,row_num*num_cols+index_of_cols[x],values[x])
     table.relation = copy_table.relation
     print("Successful insert.")
->>>>>>> 6c9d1b051b8ea048dd6deac06c74441bf4d673f6
     return database
 
 

@@ -23,4 +23,56 @@ Parser TODO:
   2. Validate that it's in a valid form / each token is valid
   3. Semantical analysis - https://sqldep.com/sql-parser/
 
+*Start of documentation*
+
+# Database Management System
+
+## How to run
+
+### Files
+
+## Query Input Manager
+
+### Input
+
+### Parser
+
+## Data Definition Language
+
+### Implementation
+
+#### Features
+  1. Create table
+  2. Drop table
+  3. Create index
+  ..* single attribute index
+  4. Drop index
+
+## Data Manipulation Language
+
+### Operators
+  1. SELECT
+    1. Parse components
+    2. Validate table selection
+    3. Project attributes for all identified tables
+    4. Execute query
+  2. INSERT
+  3. UPDATE
+  4. DELETE
+
+### Considerations
+  1. Duplicates
+  2. Referential Integrity
+
+## Main Memory Execution
+
+  1. Attribute value distributions
+  ..* Conjunctive and disjunctive selections
+  ..* Determination of inner vs. outer join
+  2. Efficient sorting
+
+## Storage Structures
+
+
+
 *User starts the project, which opens up a prompt for entering queries*
