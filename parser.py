@@ -66,7 +66,7 @@ def parse_expression(cmd,database):
         if tokens[i+1] == "into": # ASSUMPTION: only allowing for full tuples to be inserted
             table_name, values, parseFlag = parse_insert(tokens, i+1)
             if not parseFlag:
-                table = eval_insert(database,table_name, values)
+                database = eval_insert(database,table_name, values)
         else:
             parseFlag = True
     elif begin == "update":
