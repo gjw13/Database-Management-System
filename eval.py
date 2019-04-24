@@ -69,7 +69,7 @@ def eval_select(database, cols, tables, conditions):
             for item in columns:
                 if col == item:
                     test_index = col_index
-                    index_of_cols.append(test_index+1)
+                    index_of_cols.append(test_index)
                 col_index+=1
         testing = index_of_cols[:]
         if not conditions:
@@ -128,6 +128,7 @@ def eval_select(database, cols, tables, conditions):
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     # print("complex where)")
+    print(index_of_cols)
     col_index = 0
     condition_num = 0
     matched_rows_list = []
@@ -175,7 +176,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         # print(matched_rows_list)
         if len(matched_rows_list) > 1:
             if conditions[condition_num-1] == "and":
-                print("itr = " + (str(itr)))
+                # print("itr = " + (str(itr)))
                 intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
                 matched_rows_list[0] = intersection_list[:]
                 # print(intersection_list)
@@ -192,11 +193,20 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
                 print("The query did not return any results")
                 return []
             else:
+                i=1
+                attrIndexes = []
+                attrIndexes.extend(range(0,num_cols))
+                temp = np.take(table.relation,index_of_cols)
+                print_output(temp)
                 for g in intersection_list:
                     for x in range(0,len(index_of_cols)):
                         testing[x]= g*num_cols+index_of_cols[x]
                     test = np.take(table.relation,testing)
                     result_list.append(test)
+                    if i == 1:
+                        s = ""
+                        print(s.ljust(len(index_of_cols)*13+1, "-"))
+                        i+=1
                     print_output(test)
         condition_num += 2
     return result_list
@@ -219,8 +229,6 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
         list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
     # print(list_of_vals)
     for val in range(0,len(list_of_vals)):
-        print(list_of_vals[val][1])
-        print(first_val)
         if conditions[0][1] == "=":
             if list_of_vals[val][1] == first_val:
                 row_nums_matched.append(list_of_vals[val][0])
@@ -246,6 +254,10 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
         # print(row_nums_matched)
         result = []
         testing = index_of_cols[:]
+        temp = np.take(table.relation,index_of_cols)
+        print_output(temp)
+        s = ""
+        print(s.ljust(len(index_of_cols)*13+1, "-"))
         for g in row_nums_matched:
             for x in range(0,len(index_of_cols)):
                 testing[x]= g*num_cols+index_of_cols[x]
@@ -264,6 +276,9 @@ def simple_select(table,num_rows,num_cols,index_of_cols,testing):
         test = np.take(table.relation,testing)
         result_list.append(test)
         print_output(test)
+        if g == 0:
+            s = ""
+            print(s.ljust(len(index_of_cols)*13+1, "-"))
     return result_list
 
 def print_output(result):
@@ -575,11 +590,14 @@ def eval_create_index(database,index_name, table_name, col_list):
 
 
 def eval_drop_table(database,table_name):
-    table_exists = False
+    dir = "Storage"
+    cwd = os.getcwd()
     if database.tableExists(table_name):
         for relation in database.relationList:
             if relation.name == table_name.upper():
                 database.relationList.remove(relation)
+                file = os.path.join(cwd,dir,table_name.upper())
+                os.remove(file)
         print(table_name.upper() + " successfully deleted.")
         return database
     else:
@@ -726,16 +744,6 @@ def merge_scan(table1, table2, joining_attr):
                 k+=1
             i+=1
         return result_table
-
-
-
-
-# def print_relation(table):
-#     index_list = []
-#     for x in range(0,table.numRows):
-#         index_list.extend(range(x*table.numCols, table.numCols*))
-#         row = np.take(table.relation,index_list)
-#         print_output(row)
 
 def load_relations():
     # this works alright but waiting to talk with you about exactly what he wants
