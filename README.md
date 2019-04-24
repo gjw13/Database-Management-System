@@ -52,12 +52,16 @@ to pass to the evaluator/back end of our system.
 
 ### Operators
   1. SELECT
-  * Parse components
-    * Assumption: If there is more than one table in the select statement, there will be aliases.
-    * Assumption: The WHERE clause is the last thing in a query if it exists.
-  * Validate table selection
-  * Project attributes for all identified tables
-  * Execute query
+  - Parse components
+    - Assumption: If there is more than one table in the select statement, there will be aliases.
+    - Assumption: The WHERE clause is the last thing in a query if it exists.
+  - Validate table selection
+  ```
+  if database.tableExists(table_name):
+    table_obj = database.getRelation(table_name)
+  ```
+  - Project attributes for all identified tables
+  - Execute query
   2. INSERT
   * Assumption: only full tuples can be inserted into the relation.
   3. UPDATE
