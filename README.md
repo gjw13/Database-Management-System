@@ -45,7 +45,7 @@ Parser TODO:
   1. Create table
   2. Drop table
   3. Create index
-  ..* single attribute index
+    * single attribute index
   4. Drop index
 
 ## Data Manipulation Language
@@ -67,8 +67,8 @@ Parser TODO:
 ## Main Memory Execution
 
   1. Attribute value distributions
-  ..* Conjunctive and disjunctive selections
-  ..* Determination of inner vs. outer join
+    * Conjunctive and disjunctive selections
+    * Determination of inner vs. outer join
   2. Efficient sorting
 
 ## Storage Structures
