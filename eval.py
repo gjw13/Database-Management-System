@@ -42,6 +42,13 @@ def eval_select(database, cols, tables, conditions):
                             for condition2 in conditions:
                                 if condition2 is not condition:
                                     other_conditions.append(condition2)
+        else:
+            print("Relation \'" + table_name.upper() + "\' does not exist.")
+            return 0
+    for col in cols:
+        if col not in table_obj.getColNames():
+            print("One or more of your columns does not exist.")
+            return 0
 
     if len(tables) == 1:
         if database.tableExists(tables[0]):
@@ -51,8 +58,8 @@ def eval_select(database, cols, tables, conditions):
             return 0
     else:
         # join
-        # table = database.getRelation("CUSTOMERS")
-        print("there are multiple tables to select from")
+        
+        print("There are multiple tables to select from")
     table = database.getRelation(tables[0])
     columns = table.getColNames()
     for cond in conditions:
@@ -512,9 +519,11 @@ def eval_delete(database, table_name, conditions):
         row_nums_matched = []
         for x in range(1,num_rows):
             # print(np.take(table,x*num_cols+col_index+1))
-            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
         # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
+            print(list_of_vals[val][1])
+            print(the_value)
             if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == the_value:
                     row_nums_matched.append(list_of_vals[val][0])
@@ -573,11 +582,13 @@ def eval_delete(database, table_name, conditions):
                     # result_list.append(test)
                     # print_output(test)
                     index+=num_cols
-                table.relation.resize(num_rows-len(intersection_list),num_cols)
+                table.relation = np.resize(table.relation,(num_rows-len(intersection_list),num_cols))
                 table.setNumRows(num_rows-len(intersection_list))
                 num_rows = num_rows-len(intersection_list)
                 print(table.relation)
         condition_num += 2
+    print(database)
+    return database
 
 def eval_create_index(database,index_name, table_name, col_list):
     if database.tableExists(table_name):
