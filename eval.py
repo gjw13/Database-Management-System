@@ -20,6 +20,8 @@ def eval_select(database, cols, tables, conditions):
     #   If that's the only condition, return the table
     #   Otherwise send the new table back to eval_select
     result_list = []
+    index_marker = False
+    other_conditions = []
     for table in tables:
         if type(table) is tuple:
             table_name = table[0]
@@ -31,8 +33,14 @@ def eval_select(database, cols, tables, conditions):
                 for index in table_obj.getIndicies():
                     for condition in conditions:
                         # Check condition against index col_name
-                        if index[1] == condition[0]:
-                            r = 1
+                        if len(conditions) == 1 and index[1] == condition[0]:
+                            # Proceed with the select as normal
+                            break
+                        elif index[1] == condition[0]:
+                            index_marker = True
+                            for condition2 in conditions:
+                                if condition2 is not condition:
+                                    other_conditions.append(condition2)
 
     if len(tables) == 1:
         if database.tableExists(tables[0]):
@@ -89,7 +97,32 @@ def eval_select(database, cols, tables, conditions):
             else:
                 result_list = complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
 
+
+
     # Handle result_list into table object for return
+    result_table = Table(len(result_list), len(result_list[0]))
+    result_table.setName("temptable")
+    i = 0
+    indicies = []
+    while i < len(result_list[0]):
+        indicies.append(i)
+        i+=1
+    j = 0
+    for char_array in result_list:
+        i = 0
+        temp_arr = np.take(char_array, indicies)
+        while i < len(temp_arr):
+            np.put(result_table.relation, j, temp_arr[i])
+            i+=1
+            j+=1
+
+
+    # Re-do the eval_select
+    if index_marker:
+        database.addRelation(result_table)
+        print("\n\nFinal Output:\n")
+        eval_select(database, cols, "temptable", other_conditions)
+        databse.removeRelation(result_table)
 
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
@@ -269,6 +302,7 @@ def restore_state():
             relationList.append(relation)
     return relationList
 
+# TODO: Fix to handle correct structure passed in from parse
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
@@ -404,6 +438,7 @@ def eval_create_table(database,table_name,cols):
     table.setName(table_name)
     table.setNumCols(num_cols)
     table.setNumRows(m)
+    table.setColNames(cols)
     table.relation.fill(0)
     np.put(table.relation, index, "key")
     for x in range(1,table.numCols):
@@ -489,15 +524,14 @@ def test_sort(table):
     print("this is just a test, the table structure has not changed")
 
 def eval_create_index(database,index_name, table_name, col_list):
-    # NOTE: These are done using the new Table class
-    tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
+    if database.tableExists(table_name):
+        table_obj = database.getRelation(table_name)
+        for tuple in col_list:
+            col_name = tuple[0]
+            ordering = tuple[1]
+            table_obj.addIndex(index_name, col_name, ordering)
+            print("Index Created with name: " + index_name)
 
-    for tuple in col_list:
-        col_name = tuple[0]
-        ordering = tuple[1]
-        tempTable.addIndex(index_name, col_name, ordering)
-
-    return tempTable
 
 def eval_drop_table(database,table_name):
     table_exists = False
@@ -720,7 +754,7 @@ def load_relations():
         table = create_test_db(table,index,num_cols+1,i)
         index += num_cols
     # print(table)
-    columns = get_columns(table,num_cols)
+    columns = table.getColNames()
     np.put(table.relation,29,"jane")
     np.put(table.relation,30,"doe")
     np.put(table.relation,31,"3")

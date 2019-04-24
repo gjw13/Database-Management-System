@@ -327,7 +327,7 @@ def parse_drop_index(tokens,i):
 
 #######################################
 # CREATE INDEX ########################
-#######################################
+####################################### TODO: Fix error of cols not being accepted
 def create_index(tokens, i):
     parseError = False
     if (tokens[i] == "if" and tokens[i+1] == "not"):
@@ -337,23 +337,19 @@ def create_index(tokens, i):
     i+=1
     # Sanity check
     if tokens[i] == "on":
-        table_name = tokens[i+1] # ASSUMPTION: all parens are seperated by spaces on both sides
+        table_name = tokens[i+1] # ASSUMPTION: parens are not own tokens
         column_list = []
-        if (tokens[i+2] == "("):
-            end_of_col_index = tokens.index(")", i+2)
-            i+=3
-            while (i < end_of_col_index):
-                col_name = tokens[i]
-                i+=1
-                temp_order = tokens[i]
-                if temp_order[len(temp_order)-2] == ",":
-                    ordering = temp_order[:-1]
-                else:
-                    ordering = tokens[i]
-                column_list.append((col_name, ordering))
-                i+=1
-        # ASSUMPTION: No "include" block afterwards
-        # print(column_list)
+        temp_vals = tokens[i+2:]
+        for tok in temp_vals:
+            new_tok = tok
+            if '(' in tok:
+                new_tok = new_tok.replace('(', '')
+            if ')' in tok:
+                new_tok = new_tok.replace(')', '')
+            if ',' in tok:
+                new_tok = new_tok.replace(',', '')
+            column_list.append(new_tok)
+
         return index_name,table_name, column_list, i, parseError
     else:
         return index_name,"", [], i, True

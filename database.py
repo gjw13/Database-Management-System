@@ -20,3 +20,8 @@ class Database:
             if relation.name == table_name.upper():
                 return True
         return False
+
+    def removeRelation(self, relation):
+        if self.tableExists(relation.name):
+            self.relationList.remove(relation)
+            self.numRelations -= 1
