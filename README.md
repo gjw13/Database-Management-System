@@ -83,8 +83,8 @@ to pass to the evaluator/back end of our system.
 ## Main Memory Execution
 
   1. Attribute value distributions
-  * Conjunctive and disjunctive selections
-  * Determination of inner vs. outer join
+⋅⋅⋅⋅ Conjunctive and disjunctive selections
+⋅⋅⋅⋅ Determination of inner vs. outer join
   2. Efficient sorting
 
 ## Storage Structures
@@ -92,4 +92,5 @@ to pass to the evaluator/back end of our system.
 ## Estimated Grade
 Our estimate of our grade on this project is a 92%. We feel this is an accurate grade given that almost all required functions of our database management system execute with efficiency and consistency. With few small assumptions and little to no deviation from SQL grammar, our system operates according to our detailed documentation and project specifications. Thank you.
 
+----
 **April 25th, 2019**
