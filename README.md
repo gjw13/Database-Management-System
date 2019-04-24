@@ -8,12 +8,12 @@ TO DO LIST (4/19)
   2. ~~Incorporate table class into existing evaluator and parser (mostly done)~~
   3. ~~Look into incorporating < and >~~
   4. Get indexes to work --> basically check the values of the indexed col first
-      1. eval_select
+      1. ~~eval_select~~
       3. eval_delete
       4. eval_update  
   5. Relational schema
       1. ~~Create a way to keep track of tables (list of tables)~~
-      2. Parser accounts for aliases
+      2. ~~Parser accounts for aliases~~
       3. ~~Write a join algorithm (probably merge-scan) but could be nested~~
   6. Adapt eval_update
   7. Check for duplicates/referential integrity (insert, update, delete)
