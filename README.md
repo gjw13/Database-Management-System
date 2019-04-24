@@ -27,6 +27,7 @@ are entered through the CLI and received by the parser.
 ### Parser
 Our top-down recursive parser iterates through a query to determine the necessary information
 to pass to the evaluator/back end of our system.
+* Assumption: Parenthesis and commas must not have spaces on both sides.
 
 ## Data Definition Language
 ### Implementation
@@ -41,14 +42,16 @@ to pass to the evaluator/back end of our system.
   4. Drop index
 
 ## Data Manipulation Language
-
 ### Operators
   1. SELECT
   * Parse components
+    * Assumption: If there is more than one table in the select statement, there will be aliases.
+    * Assumption: The WHERE clause is the last thing in a query if it exists.
   * Validate table selection
   * Project attributes for all identified tables
   * Execute query
   2. INSERT
+  * Assumption: only full tuples can be inserted into the relation.
   3. UPDATE
   4. DELETE
 
