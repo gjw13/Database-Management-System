@@ -45,7 +45,7 @@ Parser TODO:
   1. Create table
   2. Drop table
   3. Create index
-    ⋅⋅* Single attribute index
+  ⋅⋅* Single attribute index
   4. Drop index
 
 ## Data Manipulation Language
