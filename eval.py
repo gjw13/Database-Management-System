@@ -480,7 +480,7 @@ def eval_delete(database,table_name, conditions):
         print(table.relation)
 
         #Remove those tuple(s) from the table
-        return True
+    return True
 
 def test_sort(table):
     table.sort(axis=0)
