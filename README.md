@@ -52,10 +52,10 @@ Parser TODO:
 
 ### Operators
   1. SELECT
-  1. Parse components
-  2. Validate table selection
-  3. Project attributes for all identified tables
-  4. Execute query
+  * Parse components
+  * Validate table selection
+  * Project attributes for all identified tables
+  * Execute query
   2. INSERT
   3. UPDATE
   4. DELETE
