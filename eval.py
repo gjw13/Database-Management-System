@@ -304,7 +304,6 @@ def restore_state():
             relationList.append(relation)
     return relationList
 
-# TODO: Fix to handle correct structure passed in from parse
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
@@ -313,31 +312,20 @@ def eval_insert(database,table_name,values):
     columns = table.getColNames()
     num_rows = table.numRows
     num_cols = table.numCols
-    cols = []
     index_of_cols = []
-    vals = []
-    row_num = 1 # if we want it sorted, just figure out a way to set row_num
-    # test_values = [("first","last","address"),"values",("adam","jones","arizona")]
-    for col in values[0]:
-        cols.append(col)
-    for val in values[2]:
-        vals.append(val)
-    for col in cols:
-        col_index = 0
-        for item in columns:
-            if col == item:
-                test_index = col_index
-                index_of_cols.append(test_index+1)
-            col_index+=1
+    i = 0
+    while i < num_cols:
+        index_of_cols.append(i)
+        i+=1
 
     table.relation.resize((num_rows+1,num_cols))
     table.setNumRows(num_rows+1)
     row_num = num_rows
     np.put(table.relation,row_num*num_cols,row_num)
-    for x in range(0,len(vals)):
-        np.put(table.relation,row_num*num_cols+index_of_cols[x],vals[x])
-    print(table)
-    return table
+    for x in range(0,len(values)):
+        np.put(table.relation,row_num*num_cols+index_of_cols[x],values[x])
+    #print(table.relation)
+
 
 def eval_update(database,table_name,col_vals,conditions):
     table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
