@@ -220,6 +220,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
 
 # handles a simple select statement without conditions
 def simple_select(table,num_rows,num_cols,index_of_cols,testing):
+    result_list = []
     for g in range(0,num_rows):
         for x in range(0,len(index_of_cols)):
             testing[x]= g*num_cols+index_of_cols[x]
