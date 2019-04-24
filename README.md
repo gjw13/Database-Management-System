@@ -45,17 +45,17 @@ Parser TODO:
   1. Create table
   2. Drop table
   3. Create index
-  ⋅⋅* Single attribute index
+  * Single attribute index
   4. Drop index
 
 ## Data Manipulation Language
 
 ### Operators
   1. SELECT
-    1. Parse components
-    2. Validate table selection
-    3. Project attributes for all identified tables
-    4. Execute query
+  1. Parse components
+  2. Validate table selection
+  3. Project attributes for all identified tables
+  4. Execute query
   2. INSERT
   3. UPDATE
   4. DELETE
