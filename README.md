@@ -16,6 +16,7 @@ TO DO LIST (4/19)
       2. Parser accounts for aliases
       3. ~~Write a join algorithm (probably merge-scan) but could be nested~~
   6. Adapt eval_update
+  7. Check for duplicates/referential integrity (insert, update, delete)
 
 Parser TODO:
   1. Tokenize the input
