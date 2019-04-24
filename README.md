@@ -41,9 +41,10 @@ to pass to the evaluator/back end of our system.
   - Examples
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
-  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named "Storage" which is detailed below.
+  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named "Storage", whose functionality is detailed below.
   3. Create index
-  * Single attribute index
+  - Single attribute index
+  - Examples
   4. Drop index
 
 ## Data Manipulation Language
