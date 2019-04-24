@@ -75,7 +75,7 @@ def eval_select(database, cols, tables, conditions):
     elif cols[0]=="*":
         # select all the columns
         index_of_cols = []
-        for x in range(1,table.numCols):
+        for x in range(0,table.numCols):
             index_of_cols.append(x)
         testing = index_of_cols[:]
         if not conditions:
@@ -220,8 +220,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
 
 # handles a simple select statement without conditions
 def simple_select(table,num_rows,num_cols,index_of_cols,testing):
-    result_list = []
-    for g in range(1,num_rows):
+    for g in range(0,num_rows):
         for x in range(0,len(index_of_cols)):
             testing[x]= g*num_cols+index_of_cols[x]
         # print(testing)
@@ -261,7 +260,7 @@ def restore_state():
     cwd = os.getcwd()
     mypath = os.path.join(cwd,dir)
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-    print(onlyfiles)
+    # print(onlyfiles)
     for file in onlyfiles:
         file = os.path.join(mypath,file)
         with open(file, 'rb') as input:
@@ -432,11 +431,15 @@ def get_columns(table,num_cols):
     return columns
 
 def eval_delete(database,table_name, conditions):
-    database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
-    columns = get_columns(table,num_cols)
-
+    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
+    # columns = get_columns(table,num_cols)
+    table = database.getRelation(table_name)
+    columns = table.getColNames()
+    num_rows = table.numRows
+    num_cols = table.numCols
     cols = []
     vals = []
+    num_conditions = (len(conditions)+1)/2
     deleted_rows = []
     index_of_cols = []
     list_of_vals = []
@@ -454,22 +457,30 @@ def eval_delete(database,table_name, conditions):
                 index_of_cols.append(test_index+1)
             col_index+=1
 
-    for val in vals:
-        for x in range(1,num_rows):
-            # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
-            # print("Test: "+ str(np.take(table,num_cols*x+index_of_cols2[itr])))
-            if val == np.take(table.relation,num_cols*x+index_of_cols[itr]):
-                itr+=1
-                break
+    for l in range(0,num_conditions):
+        itr = 0
+        replace_index_list = []
+        for val in vals:
+            for x in range(1,num_rows):
+                # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
+                # print("Test: "+ str(np.take(table,num_cols*x+index_of_cols2[itr])))
+                if val == np.take(table.relation,num_cols*x+index_of_cols[itr]):
+                    for g in range(1,table.numCols):
+                        replace_index_list.append(num_cols*x+g)
+                    itr+=1
+                    break
+        start_index = table.numRows*table.numCols-num_cols
+        index_list = []
+        index_list.extend(range(start_index+1,start_index+num_cols))
+        temp = np.take(table.relation,index_list) # temp contains the right (last) tuple
+        for x in range(0,len(temp)):
+            np.put(table.relation,replace_index_list[x],temp[x])
+        table.relation.resize(num_rows-1,num_cols)
+        table.setNumRows(num_rows-1)
+        print(table.relation)
 
-    for tuple in conditions:
-        col_name = tuple[0]
-        print(tuple)
-
-
-
-    #Remove those tuple(s) from the table
-    return True
+        #Remove those tuple(s) from the table
+        return True
 
 def test_sort(table):
     table.sort(axis=0)
@@ -661,7 +672,7 @@ def load_relations():
         for col in range(0,r1.numCols):
             np.put(r1.relation,row*r1.numCols+col,row+1)
     database.addRelation(r1)
-    # print(r1.relation)
+    print(r1.relation)
 
     #*** Relation 2
     r2 = Table(1000,2)
