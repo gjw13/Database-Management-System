@@ -170,7 +170,7 @@ def eval_select(database, cols, tables, conditions):
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     # print("complex where)")
-    print(index_of_cols)
+    #print(index_of_cols)
     col_index = 0
     condition_num = 0
     matched_rows_list = []
@@ -213,7 +213,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
             elif conditions[condition_num][1] == ">=":
                 if int(list_of_vals[val][1]) >= int(the_value):
                     row_nums_matched.append(list_of_vals[val][0])
-        print(row_nums_matched)
+        #print(row_nums_matched)
         matched_rows_list.append(row_nums_matched)
         # print(matched_rows_list)
         if len(matched_rows_list) > 1:
@@ -239,7 +239,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
                 attrIndexes = []
                 attrIndexes.extend(range(0,num_cols))
                 temp = np.take(table.relation,index_of_cols)
-                print_output(temp)
+                #print_output(temp)
                 for g in intersection_list:
                     for x in range(0,len(index_of_cols)):
                         testing[x]= g*num_cols+index_of_cols[x]
@@ -297,7 +297,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
         result = []
         testing = index_of_cols[:]
         temp = np.take(table.relation,index_of_cols)
-        print_output(temp)
+        #print_output(temp)
         s = ""
         print(s.ljust(len(index_of_cols)*13+1, "-"))
         for g in row_nums_matched:
@@ -378,8 +378,12 @@ def eval_insert(database,table_name,values):
         i+=1
 
     temp_list = table.relation.tolist()
+
     for tuple in temp_list:
-        if sorted(tuple) == sorted(values):
+        if values[0] == tuple[0]:
+            print("Duplicate Tuple! Not allowed.")
+            return database
+        elif sorted(tuple) == sorted(values):
             print("Duplicate Tuple! Not allowed.")
             return database
 
@@ -781,11 +785,12 @@ def load_relations():
     r3 = Table(101,2)
     r3.setName("Relation3")
 
+    r3.relation.fill(1)
     np.put(r3.relation, 0, "col1")
     np.put(r3.relation, 1, "col4")
     r3.setColNames(["col1", "col4"])
 
-    r3.relation.fill(1)
+
     for row in range(1,r3.numRows):
         np.put(r3.relation, row*r3.numCols, row)
     database.addRelation(r3)
@@ -795,11 +800,11 @@ def load_relations():
     r4 = Table(1001,2)
     r4.setName("Relation4")
 
+    r4.relation.fill(1)
     np.put(r4.relation, 0, "col1")
     np.put(r4.relation, 1, "col5")
     r4.setColNames(["col1", "col5"])
 
-    r4.relation.fill(1)
     for row in range(1,r4.numRows):
         np.put(r4.relation, row*r4.numCols, row)
     database.addRelation(r4)
