@@ -15,13 +15,7 @@ class Table:
         self.name = table_name.upper()
 
     def addIndex(self, indexName, col_name, ordering):
-        i = 0
-        col_index = -1
-        while i < len(colNames):
-            if col_name == colNames[i]:
-                col_index = i
-                i = len(colNames)
-        self.indices.append((indexName, col_index, ordering))
+        self.indices.append((indexName, col_name, ordering))
 
     def setColNames(self, col_names):
         for col_name in col_names:
@@ -43,3 +37,6 @@ class Table:
 
     def setNumRows(self,numRows):
         self.numRows = numRows
+
+    def getIndicies(self):
+        return self.indices

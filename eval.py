@@ -19,7 +19,20 @@ def eval_select(database, cols, tables, conditions):
     #   Create a new table by selecting all the rows with just the index condition
     #   If that's the only condition, return the table
     #   Otherwise send the new table back to eval_select
-
+    result_list = []
+    for table in tables:
+        if type(table) is tuple:
+            table_name = table[0]
+        else:
+            table_name = table
+        if database.tableExists(table_name):
+            table_obj = database.getRelation(table_name)
+            if len(table_obj.getIndicies()) > 0:
+                for index in table_obj.getIndicies():
+                    for condition in conditions:
+                        # Check condition against index col_name
+                        if index[1] == condition[0]:
+                            r = 1
 
     if len(tables) == 1:
         if database.tableExists(tables[0]):
@@ -51,13 +64,13 @@ def eval_select(database, cols, tables, conditions):
                 col_index+=1
         testing = index_of_cols[:]
         if not conditions:
-            simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
+            result_list = simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
         elif conditions:
             num_conditions = (len(conditions)+1)/2
             if num_conditions == 1:
-                simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
+                result_list = simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
             else:
-                complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
+                result_list = complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
 
     elif cols[0]=="*":
         # select all the columns
@@ -67,14 +80,17 @@ def eval_select(database, cols, tables, conditions):
         testing = index_of_cols[:]
         if not conditions:
             # handles simple select statement with no conditions
-            simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
+            result_list = simple_select(table,table.numRows,table.numCols,index_of_cols,testing)
         elif conditions:
             # handles a complex select statement
             num_conditions = (len(conditions)+1)/2
             if num_conditions == 1:
-                simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
+                result_list = simple_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols)
             else:
-                complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
+                result_list = complex_where(table,columns,conditions,table.numCols,table.numRows,index_of_cols,num_conditions)
+
+    # Handle result_list into table object for return
+
 
 def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_conditions):
     # print("complex where)")
@@ -83,7 +99,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
     matched_rows_list = []
     intersection_list = []
     union_list = []
-    result = []
+    result_list = []
     itr = 1
     for l in range(0,num_conditions):
         col_index = 0
@@ -140,13 +156,16 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         if l == num_conditions-1:
             if not intersection_list:
                 print("The query did not return any results")
+                return []
             else:
                 for g in intersection_list:
                     for x in range(0,len(index_of_cols)):
                         testing[x]= g*num_cols+index_of_cols[x]
                     test = np.take(table.relation,testing)
+                    result_list.append(test)
                     print_output(test)
         condition_num += 2
+    return result_list
 
 def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
     # print("simple where")
@@ -186,6 +205,7 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
                 row_nums_matched.append(list_of_vals[val][0])
     if not row_nums_matched:
         print("The query did not return any results")
+        return []
     else:
         # print(row_nums_matched)
         result = []
@@ -194,16 +214,21 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
             for x in range(0,len(index_of_cols)):
                 testing[x]= g*num_cols+index_of_cols[x]
             test = np.take(table.relation,testing)
+            result.append(test)
             print_output(test)
+        return result
 
 # handles a simple select statement without conditions
 def simple_select(table,num_rows,num_cols,index_of_cols,testing):
+    result_list = []
     for g in range(1,num_rows):
         for x in range(0,len(index_of_cols)):
             testing[x]= g*num_cols+index_of_cols[x]
         # print(testing)
         test = np.take(table.relation,testing)
+        result_list.append(test)
         print_output(test)
+    return result_list
 
 def print_output(result):
     output_list = []
