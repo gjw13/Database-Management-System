@@ -14,6 +14,13 @@ from os.path import isfile, join
 def eval_select(database, cols, tables, conditions):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = database.relationList.index(tables).getColNames()
+
+    # If there's an index on one of the conditions:
+    #   Create a new table by selecting all the rows with just the index condition
+    #   If that's the only condition, return the table
+    #   Otherwise send the new table back to eval_select
+
+
     if len(tables) == 1:
         if database.tableExists(tables[0]):
             table = database.getRelation(tables[0])
@@ -400,15 +407,8 @@ def get_columns(table,num_cols):
     return columns
 
 def eval_delete(database,table_name, conditions):
-    tempTable = Table(10,10) # TODO: Grab the correct table using the table_name
-    #Find the tuple(s) with the relevant Conditions (using an index if it exists)
-    #if table[len(table)-1] != -1: #There is an index TODO: Handle index
-        #
-    #else:
-    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
-    # columns = get_columns(table,num_cols)
-    table = database.getRelation(table_name)
-    columns = table.getColNames()
+    database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
+    columns = get_columns(table,num_cols)
 
     cols = []
     vals = []
