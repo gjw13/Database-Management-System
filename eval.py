@@ -289,7 +289,7 @@ def save_state(database):
         # relation.relation.dump(file)
 
 def restore_state():
-    # database = Database()
+    database = Database()
     relationList = []
     dir = "Storage"
     # table = np.load(file)
@@ -301,8 +301,8 @@ def restore_state():
         file = os.path.join(mypath,file)
         with open(file, 'rb') as input:
             relation = pickle.load(input)
-            relationList.append(relation)
-    return relationList
+            database.relationList.append(relation)
+    return database
 
 def eval_insert(database,table_name,values):
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
@@ -317,14 +317,16 @@ def eval_insert(database,table_name,values):
     while i < num_cols:
         index_of_cols.append(i)
         i+=1
-
-    table.relation.resize((num_rows+1,num_cols))
+    print(table.relation)
+    table.relation = np.resize(table.relation,(num_rows+1,num_cols))
+    print(table.relation)
     table.setNumRows(num_rows+1)
     row_num = num_rows
     np.put(table.relation,row_num*num_cols,row_num)
     for x in range(0,len(values)):
         np.put(table.relation,row_num*num_cols+index_of_cols[x],values[x])
     #print(table.relation)
+    return database
 
 
 def eval_update(database,table_name,col_vals,conditions):
