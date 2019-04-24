@@ -70,8 +70,9 @@ to pass to the evaluator/back end of our system.
   - Examples
     - > INSERT INTO CUSTOMERS VALUES (20, Ophir, Frieder, 29);
     - > INSERT INTO EQUIPMENT VALUES (5, crane, 2017, 2018);
-  - **Note**: Key can be a duplicate so be
   - Assumption: only full tuples can be inserted into the relation.
+  - **Note**: Key and/or full tuple cannot be a duplicate.
+    **Note**: Insert is where the syntax of our system diverges from SQL slightly. A SQL insert would look like *INSERT INTO CUSTOMERS (first, last) VALUES (David, Ortiz);* which allows for partial tuples to be entered. Because our system only allows full tuples, we have chosen to make the insert statement easier by not having to specify the attribute names.
   3. UPDATE
   4. DELETE
 
@@ -81,14 +82,17 @@ to pass to the evaluator/back end of our system.
 
 ## Main Memory Execution
 
-  1. Attribute value distributions
-  * Conjunctive and disjunctive selections
-  * Determination of inner vs. outer join
-  2. Efficient sorting
+1. Attribute value distributions
+   Conjunctive and disjunctive selections
+   Determination of inner vs. outer join
+2. Efficient sorting
 
 ## Storage Structures
+
+
 
 ## Estimated Grade
 Our estimate of our grade on this project is a 92%. We feel this is an accurate grade given that almost all required functions of our database management system execute with efficiency and consistency. With few small assumptions and little to no deviation from SQL grammar, our system operates according to our detailed documentation and project specifications. Thank you.
 
+----
 **April 25th, 2019**
