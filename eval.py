@@ -66,6 +66,7 @@ def eval_select(database, cols, tables, conditions):
                 dot_index = conditions.index(tuple_t)
         joining_cond = conditions[dot_index]
         conditions.remove(joining_cond)
+        #print(joining_cond)
 
         # join
         i = 0
@@ -73,17 +74,21 @@ def eval_select(database, cols, tables, conditions):
         while i < len(tables)-1: # ASSUMPTION: Tables have aliases
             t1_name = tables[i][0]
             t1_alias = tables[i][1]
-            join_index = [j for j, s in enumerate(joining_cond) if t1_alias in s]
+            join_index = [j for j, s in enumerate(joining_cond) if t1_alias+"." in s]
             temp_attr = joining_cond[join_index[0]]
             t1_join_attr_temp = temp_attr.replace(".", "")
-            t1_join_attr = t1_join_attr_temp.replace(t1_alias, "")
+            t1_join_attr = t1_join_attr_temp.replace(t1_alias, "", 1)
+            #print(t1_join_attr)
 
             t2_name = tables[i+1][0]
             t2_alias = tables[i+1][1]
-            join_index = [k for k, s in enumerate(joining_cond) if t2_alias in s]
+            #print(t2_alias)
+            join_index = [k for k, s in enumerate(joining_cond) if t2_alias+"." in s]
+            #print(join_index)
             temp_attr = joining_cond[join_index[0]]
             t2_join_attr_temp = temp_attr.replace(".", "")
-            t2_join_attr = t2_join_attr_temp.replace(t2_alias, "")
+            t2_join_attr = t2_join_attr_temp.replace(t2_alias, "", 1)
+            #print(t2_join_attr)
 
             table = merge_scan(database.getRelation(t1_name), database.getRelation(t2_name), t1_join_attr, t2_join_attr)
             #print(table.relation)
@@ -694,6 +699,7 @@ def merge_scan(table1, table2, joining_attr_t1, joining_attr_t2):
         tempColNames = list(OrderedDict.fromkeys(result_table.colNames))
         result_table.colNames = []
         result_table.setColNames(tempColNames)
+        #print(result_table.colNames)
         z = 0
         while z < result_table.numCols:
             result_table.relation[0,z] = result_table.colNames[z]
