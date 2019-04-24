@@ -43,7 +43,7 @@ def parse_expression(cmd,database):
         else:
             table_name, conditions, i, parseFlag = parse_delete(index+1, tokens)
             if not parseFlag:
-                eval_delete(database,table_name, conditions)
+                database = eval_delete(database,table_name, conditions)
     elif begin == "create":
         if tokens[i+1] == "table":
              table_name, columns, types, parseFlag = create_table(tokens,i)
