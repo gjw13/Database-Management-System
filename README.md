@@ -67,8 +67,8 @@ Parser TODO:
 ## Main Memory Execution
 
   1. Attribute value distributions
-    * Conjunctive and disjunctive selections
-    * Determination of inner vs. outer join
+  * Conjunctive and disjunctive selections
+  * Determination of inner vs. outer join
   2. Efficient sorting
 
 ## Storage Structures
