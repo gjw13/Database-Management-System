@@ -23,7 +23,7 @@ class Table:
 
     def getColNames(self):
         index_of_cols = []
-        for x in range(1,self.numCols):
+        for x in range(0,self.numCols):
             index_of_cols.append(x)
         columns = np.take(self.relation,index_of_cols)
         self.colNames = columns[:]

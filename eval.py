@@ -115,7 +115,7 @@ def complex_where(table,columns,conditions,num_cols,num_rows,index_of_cols,num_c
         row_nums_matched = []
         for x in range(1,num_rows):
             # print(np.take(table,x*num_cols+col_index+1))
-            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
         # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
             if conditions[condition_num][1] == "=":
@@ -182,9 +182,11 @@ def simple_where(table,columns,conditions,num_cols,num_rows,index_of_cols):
     row_nums_matched = []
 
     for x in range(1,num_rows):
-        list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+        list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
     # print(list_of_vals)
     for val in range(0,len(list_of_vals)):
+        print(list_of_vals[val][1])
+        print(first_val)
         if conditions[0][1] == "=":
             if list_of_vals[val][1] == first_val:
                 row_nums_matched.append(list_of_vals[val][0])
@@ -431,62 +433,102 @@ def get_columns(table,num_cols):
     columns = np.take(table.relation,index_of_cols)
     return columns
 
-def eval_delete(database,table_name, conditions):
-    # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
-    # columns = get_columns(table,num_cols)
+def eval_delete(database, table_name, conditions):
     table = database.getRelation(table_name)
     columns = table.getColNames()
     num_rows = table.numRows
     num_cols = table.numCols
-    cols = []
-    vals = []
     num_conditions = (len(conditions)+1)/2
-    deleted_rows = []
+    condition_num = 0
+    col_index = 0
     index_of_cols = []
-    list_of_vals = []
-    for item in conditions:
-        # print(item)
-        if item != "and" and item != "or":
-            cols.append(item[0])
-            vals.append(item[2])
-
-    for col in cols:
-        col_index = 0
-        for item in columns:
-            if col == item:
-                test_index = col_index
-                index_of_cols.append(test_index+1)
-            col_index+=1
+    matched_rows_list = []
+    intersection_list = []
+    union_list = []
+    result_list = []
+    replace_index_list = []
+    itr = 1
 
     for l in range(0,num_conditions):
-        itr = 0
-        replace_index_list = []
-        for val in vals:
-            for x in range(1,num_rows):
-                # print("Test: " + str(np.take(table,index_of_col*num_cols*x)))
-                # print("Test: "+ str(np.take(table,num_cols*x+index_of_cols2[itr])))
-                if val == np.take(table.relation,num_cols*x+index_of_cols[itr]):
-                    for g in range(1,table.numCols):
-                        replace_index_list.append(num_cols*x+g)
-                    itr+=1
-                    break
-        start_index = table.numRows*table.numCols-num_cols
-        index_list = []
-        index_list.extend(range(start_index+1,start_index+num_cols))
-        temp = np.take(table.relation,index_list) # temp contains the right (last) tuple
-        for x in range(0,len(temp)):
-            np.put(table.relation,replace_index_list[x],temp[x])
-        table.relation.resize(num_rows-1,num_cols)
-        table.setNumRows(num_rows-1)
-        print(table.relation)
+        col_index = 0
+        the_column = conditions[condition_num][0]
+        the_value = conditions[condition_num][2]
 
-        #Remove those tuple(s) from the table
-    return True
-
-def test_sort(table):
-    table.sort(axis=0)
-    print(table)
-    print("this is just a test, the table structure has not changed")
+        for item in columns:
+            if the_column == item:
+                break
+            else:
+                col_index+=1
+        list_of_vals = []
+        row_nums_matched = []
+        for x in range(1,num_rows):
+            # print(np.take(table,x*num_cols+col_index+1))
+            list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index+1)))
+        # print(list_of_vals)
+        for val in range(0,len(list_of_vals)):
+            if conditions[condition_num][1] == "=":
+                if list_of_vals[val][1] == the_value:
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "!=":
+                if list_of_vals[val][1] != the_value:
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "<":
+                if int(list_of_vals[val][1]) < int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">":
+                if int(list_of_vals[val][1]) > int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "<=":
+                if int(list_of_vals[val][1]) <= int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">=":
+                if int(list_of_vals[val][1]) >= int(the_value):
+                    row_nums_matched.append(list_of_vals[val][0])
+        print(row_nums_matched)
+        matched_rows_list.append(row_nums_matched)
+        print(matched_rows_list)
+        if len(matched_rows_list) > 1:
+            if conditions[condition_num-1] == "and":
+                intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                # print(intersection_list)
+                itr+=1
+            elif conditions[condition_num-1] == "or":
+                intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+                matched_rows_list[0] = intersection_list[:]
+                # print(intersection_list)
+                itr +=1
+            # print(intersection_list)
+        elif len(matched_rows_list) == 1:
+            intersection_list = matched_rows_list[0]
+        testing = index_of_cols[:]
+        print(intersection_list)
+        if l == num_conditions-1:
+            if not intersection_list:
+                print("The conditions given could not be found.")
+                return []
+            else:
+                index=0
+                for g in intersection_list:
+                    replace_index_list = []
+                    for a in range(1,table.numCols):
+                        replace_index_list.append(int(num_cols*g+a))
+                    print(replace_index_list)
+                    start_index = table.numRows*table.numCols-num_cols
+                    index_list = []
+                    index_list.extend(range(start_index+1-index,start_index+num_cols-index))
+                    temp = np.take(table.relation,index_list) # temp contains the right (last) tuple
+                    for x in range(0,len(temp)):
+                        np.put(table.relation,replace_index_list[x],temp[x])
+                    # test = np.take(table.relation,testing)
+                    # result_list.append(test)
+                    # print_output(test)
+                    index+=num_cols
+                table.relation.resize(num_rows-len(intersection_list),num_cols)
+                table.setNumRows(num_rows-len(intersection_list))
+                num_rows = num_rows-len(intersection_list)
+                print(table.relation)
+        condition_num += 2
 
 def eval_create_index(database,index_name, table_name, col_list):
     # NOTE: These are done using the new Table class
@@ -720,7 +762,7 @@ def load_relations():
         table = create_test_db(table,index,num_cols+1,i)
         index += num_cols
     # print(table)
-    columns = get_columns(table,num_cols)
+    columns = table.getColNames()
     np.put(table.relation,29,"jane")
     np.put(table.relation,30,"doe")
     np.put(table.relation,31,"3")
