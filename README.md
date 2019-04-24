@@ -1,28 +1,6 @@
 # cosc280project
 *Created in Python*
 
-*Possible Grammar: https://www.jooq.org/doc/latest/manual/sql-building/sql-parser/sql-parser-grammar/*
-
-TO DO LIST (4/19)
-  1. Finish eval_delete() - if time allows
-  2. ~~Incorporate table class into existing evaluator and parser (mostly done)~~
-  3. ~~Look into incorporating < and >~~
-  4. Get indexes to work --> basically check the values of the indexed col first
-      1. ~~eval_select~~
-      3. eval_delete
-      4. eval_update  
-  5. Relational schema
-      1. ~~Create a way to keep track of tables (list of tables)~~
-      2. ~~Parser accounts for aliases~~
-      3. ~~Write a join algorithm (probably merge-scan) but could be nested~~
-  6. Adapt eval_update
-  7. Check for duplicates/referential integrity (insert, update, delete)
-
-Parser TODO:
-  1. Tokenize the input
-  2. Validate that it's in a valid form / each token is valid
-  3. Semantical analysis - https://sqldep.com/sql-parser/
-
 *Start of documentation*
 
 # Database Management System
@@ -34,25 +12,28 @@ Our system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 > python main.py
 
 ### Files
-* **main.py** - this is the driver of the system
+* **main.py** - this is the driver of the system, handles storage
 * **parser.py** - contains the majority of the parsing of the queries
-* **eval.py** - contains the back end of the system, receives input from parser.py and makes appropriate executions
+* **eval.py** - contains the back end of the system, receives input from parser and makes appropriate executions
 * **table.py** - contains the table class
 * **database.py** - contains the database class
 * **Storage/** - directory that contains the stored relations in separate files
 
 ## Query Input Manager
-
 ### Input
+Our query input manager is a simple line editor when run from the command line interface. Queries
+are entered through the CLI and received by the parser.
 
 ### Parser
+Our top-down recursive parser iterates through a query to determine the necessary information
+to pass to the evaluator/back end of our system.
 
 ## Data Definition Language
-
 ### Implementation
 
 #### Features
   1. Create table
+  Example: > CREATE TABLE CUSTOMERS (first string, last string, position string, age age);
   2. Drop table
   3. Create index
   * Single attribute index
@@ -83,6 +64,7 @@ Our system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 
 ## Storage Structures
 
+## Estimated Grade
+Our estimate of our grade on this project is a 92%. We feel this is an accurate grade given that almost all required functions of our database management system execute with efficiency and consistency. With few small assumptions and little to no deviation from SQL grammar, our system operates according to our detailed documentation and project specifications. Thank you.
 
-
-*User starts the project, which opens up a prompt for entering queries*
+**April 25th, 2019**
