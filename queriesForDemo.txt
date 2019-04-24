@@ -1,0 +1,4 @@
+select * from relation1;
+SELECT * FROM relation2;
+select * from relation3;
+SELECT * FROM relation4;
