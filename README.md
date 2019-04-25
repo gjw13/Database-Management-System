@@ -8,7 +8,7 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 > python main.py
 
 ### Files
-* **main.py** - this is the driver of the system, handles storage
+* **main.py** - this is the driver of the system, handles storage 
 * **parser.py** - contains the majority of the parsing of the queries
 * **eval.py** - contains the back end of the system, receives input from parser and makes appropriate executions
 * **table.py** - contains the table class
