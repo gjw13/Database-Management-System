@@ -83,7 +83,7 @@ to pass to the evaluator/back end of our system.
 ## Main Memory Execution
 
 1. Attribute value distributions
-   Conjunctive and disjunctive selections
+   Conjunctive and disjunctive selections - our system allows for both conjunctive and disjunctive selections using set union and intersections, respectively
    ```
    if conditions[condition_num-1] == "and":
       intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
@@ -94,12 +94,38 @@ to pass to the evaluator/back end of our system.
       matched_rows_list[0] = intersection_list[:]
       itr +=1
    ```
-   Determination of inner vs. outer join
 2. Efficient sorting
+  The system uses merge-scan to join relations together, being more efficient than a nested loop join. When two relations in a select statement, merge-scan is used to join those relations specified together.
 
 ## Storage Structures
-
-
+  Our system has the ability to save the state of the database between executions of the program. Using the python package *pickle*, the system saves each relation to a file of that relations name in the subdirectory *Storage*.
+  - Save state
+  ```
+  def save_state(database):
+      dir = "Storage"
+      for relation in database.relationList:
+          filename = str(relation.name)
+          cwd = os.getcwd()
+          file = os.path.join(cwd,dir,filename)
+          with open(file, 'wb') as output:
+              pickle.dump(relation, output, pickle.HIGHEST_PROTOCOL)
+  ```
+  - Restore state
+  ```
+  def restore_state():
+      database = Database()
+      relationList = []
+      dir = "Storage"
+      cwd = os.getcwd()
+      mypath = os.path.join(cwd,dir)
+      onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+      for file in onlyfiles:
+          file = os.path.join(mypath,file)
+          with open(file, 'rb') as input:
+              relation = pickle.load(input)
+              database.relationList.append(relation)
+      return database
+  ```
 
 ## Estimated Grade
 Our estimate of our grade on this project is a 92%. We feel this is an accurate grade given that almost all required functions of our database management system execute with efficiency and consistency. With few small assumptions and little to no deviation from SQL grammar, our system operates according to our detailed documentation and project specifications. Thank you.
