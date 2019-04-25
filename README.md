@@ -56,20 +56,20 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 ## Data Manipulation Language
 ### Operators
   1. SELECT
-  - Syntax: SELECT <cols\> FROM <relation\> WHERE <conditions\>
-  - Parse components
-    - Assumption: If there is more than one table in the select statement, there will be aliases.
-    - Assumption: The WHERE clause is the last thing in a query if it exists.
-  - Validate table selection
+  - The system will parse the components of the query, validate the table selection, project attributes for all identified tables, then execute the query based on the conditions. If multiple relations are given, it will join two relations to make complete the query.
+  - Syntax
+    - > SELECT <cols\> FROM <relation\> WHERE <conditions\>
+  - **Assumption**: If there is more than one table in the select statement, there will be aliases.
+  - **Assumption**: The WHERE clause is the last thing in a query if it exists.
+  - Example of table validation
   ```
   if database.tableExists(table_name):
     table_obj = database.getRelation(table_name)
   ```
-  - Project attributes for all identified tables
-  - Execute query
   - Examples
     - > SELECT * FROM customers WHERE first = john OR last = smith
   2. INSERT
+  - The system will add a tuple to the relation given the tuple stated in the update statement. It will resize the relation by adding a row and updating the table object.
   - Syntax
     - > INSERT INTO <relation> VALUES (<val>,<val>,...,<val>)
   - Examples
@@ -79,11 +79,17 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
   - **Note**: Key and/or full tuple cannot be a duplicate.
   - **Note**: Insert is where the syntax of our system diverges from SQL slightly. A SQL insert would look like *INSERT INTO CUSTOMERS (first, last) VALUES (David, Ortiz);* which allows for partial tuples to be entered. Because our system only allows full tuples, we have chosen to make the insert statement easier by not having to specify the attribute names.
   3. UPDATE
+  - The system will update values in every tuple that matches conditions stated.
   - Syntax
-    - > UPDATE <relation> SET <col> = <val> where <col> = <val>
+    - > UPDATE <relation\> SET <col\> = <val\> WHERE <condtions\>
   - Examples
-    - update customers set age = 30 where last = Frieder
+    - > UPDATE customers SET age = 30 WHERE last = Frieder
   4. DELETE
+  - The system will delete a tuple from a relation and return the updated relation to the parser.
+  - Syntax
+    - > DELETE FROM <relation\> WHERE <conditions\>
+  - Examples
+    - > DELETE FROM customers WHERE first = donald;
 
 ## Main Memory Execution
 1. Attribute value distributions
