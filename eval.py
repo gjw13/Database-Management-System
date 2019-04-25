@@ -400,7 +400,7 @@ def eval_insert(database,table_name,values):
 
 
 def eval_update(database,table_name,col_vals,conditions):
-    table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
+    # table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
     print(col_vals)
     print(conditions)
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
@@ -413,6 +413,8 @@ def eval_update(database,table_name,col_vals,conditions):
     col_index = 0
     cols = []
     vals = []
+    num_rows = table.numRows
+    num_cols = table.numCols
     search_cols = []
     search_vals = []
     index_of_cols1 = []
@@ -435,7 +437,7 @@ def eval_update(database,table_name,col_vals,conditions):
         for item in columns:
             if col == item:
                 test_index = col_index
-                index_of_cols1.append(test_index+1)
+                index_of_cols1.append(test_index)
             col_index+=1
     # find index of column to search for value
     for col in search_cols:
@@ -443,7 +445,7 @@ def eval_update(database,table_name,col_vals,conditions):
         for item in columns:
             if col == item:
                 test_index = col_index
-                index_of_cols2.append(test_index+1)
+                index_of_cols2.append(test_index)
             col_index+=1
 
     itr = 0
@@ -460,7 +462,7 @@ def eval_update(database,table_name,col_vals,conditions):
             elif conditions[condition_num][1] == "!=":
                 if list_of_vals[val][1] != search_vals[l]:
                     row_nums_matched.append(list_of_vals[val][0])
-            #print(row_nums_matched)
+            # print(row_nums_matched)
         matched_rows_list.append(row_nums_matched)
         if len(matched_rows_list) > 1:
             if conditions[condition_num-1] == "and":
@@ -471,6 +473,8 @@ def eval_update(database,table_name,col_vals,conditions):
                 intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
                 matched_rows_list[0] = intersection_list[:]
                 itr +=1
+        elif len(matched_rows_list) == 1:
+            intersection_list = matched_rows_list[0]
         # print("intersection list : " + str(intersection_list))
         testing = index_of_cols1[:]
         if l == num_conditions-1:
@@ -482,10 +486,11 @@ def eval_update(database,table_name,col_vals,conditions):
                     for x in range(0,len(index_of_cols1)):
                         testing[x]= g*num_cols+index_of_cols1[x]
                         np.put(table.relation,g*num_cols+index_of_cols1[x],vals[x])
+                print("Tuple updated successfully.")
 
         condition_num+=2
 
-    print(table)
+    # print(table.relation)
     return database
 
 def eval_create_table(database,table_name,cols):
@@ -559,8 +564,8 @@ def eval_delete(database, table_name, conditions):
             list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
         # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
-            print(list_of_vals[val][1])
-            print(the_value)
+            # print(list_of_vals[val][1])
+            # print(the_value)
             if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == the_value:
                     row_nums_matched.append(list_of_vals[val][0])
@@ -579,9 +584,9 @@ def eval_delete(database, table_name, conditions):
             elif conditions[condition_num][1] == ">=":
                 if int(list_of_vals[val][1]) >= int(the_value):
                     row_nums_matched.append(list_of_vals[val][0])
-        print(row_nums_matched)
+        # print(row_nums_matched)
         matched_rows_list.append(row_nums_matched)
-        print(matched_rows_list)
+        # print(matched_rows_list)
         if len(matched_rows_list) > 1:
             if conditions[condition_num-1] == "and":
                 intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))

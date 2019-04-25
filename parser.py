@@ -407,7 +407,8 @@ def parse_update(tokens, i):
     # iterate through the conditions, putting every trio in a tuple
     j = 0
     while (j <= len(col_val_conditions)-3):
-        tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2])
+        tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2].replace(',', ''))
+        print(tuple)
         if not tuple:
             parseError = True
             j = len(col_val_conditions)-3
