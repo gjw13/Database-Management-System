@@ -405,7 +405,11 @@ def eval_update(database,table_name,col_vals,conditions):
     print(conditions)
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
-    table = database.getRelation(table_name)
+    if database.tableExists(table_name):
+        table = database.getRelation(table_name)
+    else:
+        print("Table does not exist.")
+        return database
     columns = table.getColNames()
     num_conditions = (len(conditions)+1)/2
     index_of_col_conditions = 0
@@ -560,12 +564,8 @@ def eval_delete(database, table_name, conditions):
         list_of_vals = []
         row_nums_matched = []
         for x in range(1,num_rows):
-            # print(np.take(table,x*num_cols+col_index+1))
             list_of_vals.append((x,np.take(table.relation,x*num_cols+col_index)))
-        # print(list_of_vals)
         for val in range(0,len(list_of_vals)):
-            # print(list_of_vals[val][1])
-            # print(the_value)
             if conditions[condition_num][1] == "=":
                 if list_of_vals[val][1] == the_value:
                     row_nums_matched.append(list_of_vals[val][0])
@@ -602,7 +602,7 @@ def eval_delete(database, table_name, conditions):
         elif len(matched_rows_list) == 1:
             intersection_list = matched_rows_list[0]
         testing = index_of_cols[:]
-        print(intersection_list)
+        # print(intersection_list)
         if l == num_conditions-1:
             if not intersection_list:
                 print("The conditions given could not be found.")
@@ -613,7 +613,7 @@ def eval_delete(database, table_name, conditions):
                     replace_index_list = []
                     for a in range(1,table.numCols):
                         replace_index_list.append(int(num_cols*g+a))
-                    print(replace_index_list)
+                    # print(replace_index_list)
                     start_index = table.numRows*table.numCols-num_cols
                     index_list = []
                     index_list.extend(range(start_index+1-index,start_index+num_cols-index))
@@ -627,9 +627,9 @@ def eval_delete(database, table_name, conditions):
                 table.relation = np.resize(table.relation,(num_rows-len(intersection_list),num_cols))
                 table.setNumRows(num_rows-len(intersection_list))
                 num_rows = num_rows-len(intersection_list)
-                print(table.relation)
+                # print(table.relation)
         condition_num += 2
-    print(database)
+    # print(database)
     return database
 
 def eval_create_index(database,index_name, table_name, col_list):
@@ -768,7 +768,7 @@ def load_relations():
         for col in range(0,r1.numCols):
             np.put(r1.relation,row*r1.numCols+col,row)
     database.addRelation(r1)
-    print(r1.relation)
+    # print(r1.relation)
 
     #*** Relation 2
     r2 = Table(1001,2)
@@ -840,7 +840,7 @@ def load_relations():
     np.put(table.relation,37,"donald")
     np.put(table.relation,38,"trump")
     # print(table.relation)
-    print("\n")
+    # print("\n")
 
     database.addRelation(table)
     for relation in database.relationList:
