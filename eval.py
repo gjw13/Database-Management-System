@@ -627,6 +627,7 @@ def eval_delete(database, table_name, conditions):
                 table.relation = np.resize(table.relation,(num_rows-len(intersection_list),num_cols))
                 table.setNumRows(num_rows-len(intersection_list))
                 num_rows = num_rows-len(intersection_list)
+                print("Successful tuple deletion.")
                 # print(table.relation)
         condition_num += 2
     # print(database)
