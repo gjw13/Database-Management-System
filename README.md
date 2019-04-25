@@ -72,7 +72,7 @@ to pass to the evaluator/back end of our system.
     - > INSERT INTO EQUIPMENT VALUES (5, crane, 2017, 2018);
   - Assumption: only full tuples can be inserted into the relation.
   - **Note**: Key and/or full tuple cannot be a duplicate.
-    **Note**: Insert is where the syntax of our system diverges from SQL slightly. A SQL insert would look like *INSERT INTO CUSTOMERS (first, last) VALUES (David, Ortiz);* which allows for partial tuples to be entered. Because our system only allows full tuples, we have chosen to make the insert statement easier by not having to specify the attribute names.
+  - **Note**: Insert is where the syntax of our system diverges from SQL slightly. A SQL insert would look like *INSERT INTO CUSTOMERS (first, last) VALUES (David, Ortiz);* which allows for partial tuples to be entered. Because our system only allows full tuples, we have chosen to make the insert statement easier by not having to specify the attribute names.
   3. UPDATE
   4. DELETE
 
@@ -84,6 +84,16 @@ to pass to the evaluator/back end of our system.
 
 1. Attribute value distributions
    Conjunctive and disjunctive selections
+   ```
+   if conditions[condition_num-1] == "and":
+      intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
+      matched_rows_list[0] = intersection_list[:]
+      itr+=1
+   elif conditions[condition_num-1] == "or":
+      intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
+      matched_rows_list[0] = intersection_list[:]
+      itr +=1
+   ```
    Determination of inner vs. outer join
 2. Efficient sorting
 

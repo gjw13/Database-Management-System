@@ -460,10 +460,8 @@ def eval_update(database,table_name,col_vals,conditions):
         matched_rows_list.append(row_nums_matched)
         if len(matched_rows_list) > 1:
             if conditions[condition_num-1] == "and":
-                print("itr = " + (str(itr)))
                 intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
                 matched_rows_list[0] = intersection_list[:]
-                # print(intersection_list)
                 itr+=1
             elif conditions[condition_num-1] == "or":
                 intersection_list = list(set(matched_rows_list[0]) | set(matched_rows_list[itr]))
