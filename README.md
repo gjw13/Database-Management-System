@@ -73,7 +73,7 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
   2. INSERT
   - The system will add a tuple to the relation given the tuple stated in the update statement. It will resize the relation by adding a row and updating the table object.
   - Syntax
-    - > INSERT INTO <relation> VALUES (<val>,<val>,...,<val>)
+    - > INSERT INTO <relation\> VALUES (<val\>,<val\>,...,<val\>)
   - Examples
     - > INSERT INTO CUSTOMERS VALUES (20, Ophir, Frieder, 29);
     - > INSERT INTO EQUIPMENT VALUES (5, crane, 2017, 2018);
