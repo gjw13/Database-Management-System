@@ -407,14 +407,14 @@ def parse_update(tokens, i):
     j = 0
     while (j <= len(col_val_conditions)-3):
         tuple = (col_val_conditions[j], col_val_conditions[j+1], col_val_conditions[j+2].replace(',', ''))
-        print(tuple)
+        #print(tuple)
         if not tuple:
             parseError = True
             j = len(col_val_conditions)-3
         else:
             col_vals.append(tuple)
             j+=3
-    print(col_vals)
+    #print(col_vals)
     if not parseError:
         i = end_of_tuples
         conditions, i, parseError = parse_where(i, tokens)
