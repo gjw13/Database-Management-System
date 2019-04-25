@@ -401,8 +401,6 @@ def eval_insert(database,table_name,values):
 
 def eval_update(database,table_name,col_vals,conditions):
     # table_name, col_vals, conditions = ("customers",[("first","=","hodor"),"and",("last","=","testing123")],[("last","=","wills"),"or",("last","!=","doe")])
-    print(col_vals)
-    print(conditions)
     # database,table,num_cols,num_rows = eval_create_table(database,"customers",("first","last","address"))
     # columns = get_columns(table,num_cols)
     if database.tableExists(table_name):
