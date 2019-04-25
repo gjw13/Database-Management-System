@@ -1,10 +1,6 @@
-# cosc280project
-*Created in Python*
-
-*Start of documentation*
-
 # Database Management System
-Greg Wills and David Wilke
+## Intro to Databases - COSC 280
+### Greg Wills and David Wilke
 
 Our system uses a similar grammar to SQL. Check it out [here](https://forcedotcom.github.io/phoenix/).
 
