@@ -42,12 +42,14 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
   3. CREATE INDEX
+  - The create index command will create the specified index on a table object if the object exists in the database object. It is stored as part of the table object.
   - Syntax
     - > CREATE INDEX <indexName\> on <relation\> (<col\>);
   - Examples
     - > CREATE INDEX index_name on CUSTOMERS (age);
     - > CREATE INDEX index_name on CUSTOMERS (first, last);
   4. DROP INDEX
+  - The drop index command will remove the specified index from the specified table object if the table exists and if the index exists.
   - Syntax
     - > DROP INDEX <indexName\> on <relation\>;
   - Examples
