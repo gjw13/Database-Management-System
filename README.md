@@ -8,7 +8,7 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 > python main.py
 
 ### Files
-* **main.py** - this is the driver of the system, handles storage
+* **main.py** - this is the driver of the system, handles storage 
 * **parser.py** - contains the majority of the parsing of the queries
 * **eval.py** - contains the back end of the system, receives input from parser and makes appropriate executions
 * **table.py** - contains the table class
@@ -17,12 +17,10 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
 
 ## Query Input Manager
 ### Input
-Our query input manager is a simple line editor when run from the command line interface. Queries
-are entered through the CLI and received by the parser.
+  Our query input manager is a simple line editor when run from the command line interface. Queries are entered through the CLI and received by the parser.
 
 ### Parser
-Our top-down recursive parser iterates through a query to determine the necessary information
-to pass to the evaluator/back end of our system.
+  Our top-down recursive parser iterates through a query to determine the necessary information to pass to the evaluator/back end of our system.
 * Assumption: Parenthesis and commas must not have spaces on both sides.
 
 ## Data Definition Language
@@ -30,20 +28,19 @@ to pass to the evaluator/back end of our system.
 
 #### Features
   1. CREATE TABLE
-  Examples
-  - > CREATE TABLE CUSTOMERS (first string, last string, position string, age int);
-  - > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string);
+  - Examples
+    - > CREATE TABLE CUSTOMERS (first string, last string, position string, age int);
+    - > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string);
   - **NOTE**: Every value contained in the relation is entered as a string, so the syntax above renders the type specification with no significance. As noted below, this does not effect the comparison of integers with binary comparison operators.
   2. DROP TABLE
+  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named *Storage* whose functionality is detailed below.
   - Examples
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
-  - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named *Storage*, whose functionality is detailed below.
   3. CREATE INDEX
   - Examples
     - > CREATE INDEX index_name on CUSTOMERS (age);
     - > CREATE INDEX index_name on CUSTOMERS (first, last);
-  * Single attribute index
   4. DROP INDEX
   - Examples
     - > DROP INDEX index_name on CUSTOMERS;
@@ -61,9 +58,11 @@ to pass to the evaluator/back end of our system.
   ```
   - Project attributes for all identified tables
   - Execute query
+  - Syntax: SELECT <cols> from <relation> where <conditions>
   - Examples
     - > select * from customers where first = john or last = smith
   2. INSERT
+  - Syntax: > INSERT INTO <relation> VALUES (<val>,<val>,...,<val>)
   - Examples
     - > INSERT INTO CUSTOMERS VALUES (20, Ophir, Frieder, 29);
     - > INSERT INTO EQUIPMENT VALUES (5, crane, 2017, 2018);
@@ -71,6 +70,9 @@ to pass to the evaluator/back end of our system.
   - **Note**: Key and/or full tuple cannot be a duplicate.
   - **Note**: Insert is where the syntax of our system diverges from SQL slightly. A SQL insert would look like *INSERT INTO CUSTOMERS (first, last) VALUES (David, Ortiz);* which allows for partial tuples to be entered. Because our system only allows full tuples, we have chosen to make the insert statement easier by not having to specify the attribute names.
   3. UPDATE
+  - Syntax: > UPDATE <relation> SET <col> = <val> where <col> = <val>
+  - Examples
+    - update customers set age = 30 where last = Frieder
   4. DELETE
 
 ## Main Memory Execution

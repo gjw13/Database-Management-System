@@ -164,7 +164,6 @@ def parse_table(i,tokens):
                 parseFlag = True
 
     i = where_index
-    print("Tables selected from: " , tuple_list)
     return tuple_list, i, parseFlag
 
 #######################################
