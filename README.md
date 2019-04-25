@@ -2,7 +2,7 @@
 ## Intro to Databases - COSC 280
 ### Greg Wills and David Wilke
 
-Our system uses a similar grammar to SQL. Check it out [here](https://forcedotcom.github.io/phoenix/).
+The system uses a similar grammar to SQL. Check it out [here](https://forcedotcom.github.io/phoenix/). Python was chosen for a few reasons, the main one being its ability to parse strings with ease. Building the parser proved to be a difficult first step in our system, but was made easier by python’s ability to parse the queries entered by the user on the front end. The system functions in a similar fashion to SQL on the user interface side. The back end was fully developed separate from SQL.
 
 ## How to run
 > python main.py
@@ -29,27 +29,26 @@ to pass to the evaluator/back end of our system.
 ### Implementation
 
 #### Features
-  1. Create table
-  - Examples
-    - > CREATE TABLE CUSTOMERS (first string, last string, position string, age int);
-    - > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string);
+  1. CREATE TABLE
+  Examples
+  - > CREATE TABLE CUSTOMERS (first string, last string, position string, age int);
+  - > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string);
   - **NOTE**: Every value contained in the relation is entered as a string, so the syntax above renders the type specification with no significance. As noted below, this does not effect the comparison of integers with binary comparison operators.
-  2. Drop table
+  2. DROP TABLE
   - Examples
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
   - The drop table command will remove the specified relation from the database object. Similarly, it will remove the file from the storage directory named *Storage*, whose functionality is detailed below.
-  3. Create index
+  3. CREATE INDEX
   - Examples
     - > CREATE INDEX index_name on CUSTOMERS (age);
     - > CREATE INDEX index_name on CUSTOMERS (first, last);
   * Single attribute index
-  4. Drop index
+  4. DROP INDEX
   - Examples
     - > DROP INDEX index_name on CUSTOMERS;
 
 ## Data Manipulation Language
-
 ### Operators
   1. SELECT
   - Parse components
@@ -62,6 +61,8 @@ to pass to the evaluator/back end of our system.
   ```
   - Project attributes for all identified tables
   - Execute query
+  - Examples
+    - > select * from customers where first = john or last = smith
   2. INSERT
   - Examples
     - > INSERT INTO CUSTOMERS VALUES (20, Ophir, Frieder, 29);
@@ -72,14 +73,9 @@ to pass to the evaluator/back end of our system.
   3. UPDATE
   4. DELETE
 
-### Considerations
-  1. Duplicates
-  2. Referential Integrity
-
 ## Main Memory Execution
-
 1. Attribute value distributions
-   Conjunctive and disjunctive selections - our system allows for both conjunctive and disjunctive selections using set union and intersections, respectively
+   - Conjunctive and disjunctive selections - our system allows for both conjunctive and disjunctive selections using set union and intersections, respectively
    ```
    if conditions[condition_num-1] == "and":
       intersection_list = list(set(matched_rows_list[0]) & set(matched_rows_list[itr]))
@@ -91,7 +87,7 @@ to pass to the evaluator/back end of our system.
       itr +=1
    ```
 2. Efficient sorting
-  The system uses merge-scan to join relations together, being more efficient than a nested loop join. When two relations in a select statement, merge-scan is used to join those relations specified together.
+  - The system uses merge-scan to join relations together, being more efficient than a nested loop join. When two relations in a select statement, merge-scan is used to join those relations specified together.
 
 ## Storage Structures
   Our system has the ability to save the state of the database between executions of the program. Using the python package *pickle*, the system saves each relation to a file of that relations name in the subdirectory *Storage*.
