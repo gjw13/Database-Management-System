@@ -29,12 +29,12 @@ to pass to the evaluator/back end of our system.
 ### Implementation
 
 #### Features
-  1. Create table
-  - Examples
-    - > CREATE TABLE CUSTOMERS (first string, last string, position string, age int);
-    - > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string);
-  - **NOTE**: Every value contained in the relation is entered as a string, so the syntax above renders the type specification with no significance. As noted below, this does not effect the comparison of integers with binary comparison operators.
-  2. Drop table
+CREATE TABLE
+  Example
+  > CREATE TABLE CUSTOMERS (first string, last string, position string, age int)
+  > CREATE TABLE EQUIPMENT (type string, purchase_date string, sell_date string)
+**NOTE**: Every value contained in the relation is entered as a string, so the syntax above renders the type specification with no significance. As noted below, this does not effect the comparison of integers with binary comparison operators.
+DROP TABLE
   - Examples
     - > DROP TABLE CUSTOMERS;
     - > DROP TABLE EQUIPMENT;
