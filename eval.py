@@ -464,6 +464,18 @@ def eval_update(database,table_name,col_vals,conditions):
             elif conditions[condition_num][1] == "!=":
                 if list_of_vals[val][1] != search_vals[l]:
                     row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "<":
+                if int(list_of_vals[val][1]) < int(search_vals[l]):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">":
+                if int(list_of_vals[val][1]) > int(search_vals[l]):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == ">=":
+                if int(list_of_vals[val][1]) >= int(search_vals[l]):
+                    row_nums_matched.append(list_of_vals[val][0])
+            elif conditions[condition_num][1] == "<=":
+                if int(list_of_vals[val][1]) <= int(search_vals[l]):
+                    row_nums_matched.append(list_of_vals[val][0])
             # print(row_nums_matched)
         matched_rows_list.append(row_nums_matched)
         if len(matched_rows_list) > 1:

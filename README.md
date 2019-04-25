@@ -107,7 +107,7 @@ The system uses a similar grammar to SQL. Check it out [here](https://forcedotco
       itr +=1
    ```
 2. Efficient sorting
-  - The system uses merge-scan to join relations together, being more efficient than a nested loop join. When two relations in a select statement, merge-scan is used to join those relations specified together.
+  - The system uses merge-scan to join relations together, being more efficient than a nested loop join. When two relations are in a select statement, merge-scan is used to join those relations specified together.
 
 ## Storage Structures
   Our system has the ability to save the state of the database between executions of the program. Using the python package *pickle*, the system saves each relation to a file of that relations name in the subdirectory *Storage*.
