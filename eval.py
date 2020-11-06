@@ -1,5 +1,3 @@
-# evaluator functions
-# helpers
 from __future__ import print_function
 import numpy as np
 from table import *
@@ -10,7 +8,6 @@ from os import listdir
 from os.path import isfile, join
 import copy
 from collections import OrderedDict
-
 
 
 def eval_select(database, cols, tables, conditions):
